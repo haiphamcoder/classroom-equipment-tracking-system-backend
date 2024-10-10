@@ -1,1 +1,1 @@
-# classroom-equipment-tracking-system
+# Classroom equipment tracking system
