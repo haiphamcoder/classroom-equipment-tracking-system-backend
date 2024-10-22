@@ -42,7 +42,6 @@ public class EmailService {
                     log.info("sent mail: {}", message);
                 } catch (InterruptedException e) {
                     log.error("Error sending email", e);
-                    throw new RuntimeException(e);
                 }
             }
         });
@@ -62,7 +61,7 @@ public class EmailService {
             helper.setText(content, true);
             queue.add(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error("Error sending email", e);
         }
     }
 
@@ -78,7 +77,7 @@ public class EmailService {
             helper.setText(content, true);
             queue.add(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error("Error sending email", e);
         }
     }
 }
