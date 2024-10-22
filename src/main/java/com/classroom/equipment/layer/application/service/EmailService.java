@@ -35,11 +35,13 @@ public class EmailService {
     private void start() {
         Thread thread = new Thread(() -> {
             while (true) {
+                MimeMessage message;
                 try {
-                    MimeMessage message = queue.take();
+                    message = queue.take();
                     gmailSender.send(message);
                     log.info("sent mail: {}", message);
                 } catch (InterruptedException e) {
+                    log.error("Error sending email", e);
                     throw new RuntimeException(e);
                 }
             }
