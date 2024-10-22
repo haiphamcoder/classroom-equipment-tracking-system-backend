@@ -1,5 +1,13 @@
 # Classroom equipment tracking system
 
+[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/summary/new_code?id=haiphamcoder_classroom-equipment-tracking-system-backend)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=haiphamcoder_classroom-equipment-tracking-system-backend&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=haiphamcoder_classroom-equipment-tracking-system-backend)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=haiphamcoder_classroom-equipment-tracking-system-backend&metric=bugs)](https://sonarcloud.io/summary/new_code?id=haiphamcoder_classroom-equipment-tracking-system-backend)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=haiphamcoder_classroom-equipment-tracking-system-backend&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=haiphamcoder_classroom-equipment-tracking-system-backend)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=haiphamcoder_classroom-equipment-tracking-system-backend&metric=coverage)](https://sonarcloud.io/summary/new_code?id=haiphamcoder_classroom-equipment-tracking-system-backend)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=haiphamcoder_classroom-equipment-tracking-system-backend&metric=duplicated_lines_density)](https://sonarcloud.io/summary/new_code?id=haiphamcoder_classroom-equipment-tracking-system-backend)
+
 ## Overview
 
 The Classroom Equipment Tracking System is designed to manage and track the usage of equipment in classrooms. It helps
