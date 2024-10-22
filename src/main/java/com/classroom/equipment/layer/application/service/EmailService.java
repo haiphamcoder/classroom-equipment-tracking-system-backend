@@ -24,6 +24,8 @@ public class EmailService {
     private final TemplateEngine templateEngine;
     private final BlockingDeque<MimeMessage> queue;
 
+    private static final String ERROR_SENDING_EMAIL = "Error sending email";
+
     public EmailService(@Qualifier("gmailSender") JavaMailSender gmailSender,
                         @Qualifier("emailTemplate") TemplateEngine templateEngine) {
         this.gmailSender = gmailSender;
@@ -41,8 +43,7 @@ public class EmailService {
                     gmailSender.send(message);
                     log.info("sent mail: {}", message);
                 } catch (InterruptedException e) {
-                    log.error("Error sending email", e);
-                    throw new RuntimeException(e);
+                    log.error(ERROR_SENDING_EMAIL, e);
                 }
             }
         });
@@ -62,7 +63,7 @@ public class EmailService {
             helper.setText(content, true);
             queue.add(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error(ERROR_SENDING_EMAIL, e);
         }
     }
 
@@ -78,7 +79,7 @@ public class EmailService {
             helper.setText(content, true);
             queue.add(message);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error(ERROR_SENDING_EMAIL, e);
         }
     }
 }
