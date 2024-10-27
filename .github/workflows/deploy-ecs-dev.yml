@@ -40,8 +40,8 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
-          ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
-          IMAGE_TAG: ${{ github.sha }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          IMAGE_TAG: dev
         run: |
           # Build a docker container and
           # push it to ECR so that it can
@@ -61,10 +61,10 @@ jobs:
       - name: Update Environment Variables
         id: update-env-vars
         env:
-          GMAIL_SMTP_HOST: ${{ vars.GMAIL_SMTP_HOST }}
-          GMAIL_SMTP_PORT: ${{ vars.GMAIL_SMTP_PORT }}
-          GMAIL_SMTP_USERNAME: ${{ vars.GMAIL_SMTP_USERNAME }}
-          GMAIL_SMTP_PASSWORD: ${{ vars.GMAIL_SMTP_PASSWORD }}
+          GMAIL_SMTP_HOST: ${{ secrets.GMAIL_SMTP_HOST }}
+          GMAIL_SMTP_PORT: ${{ secrets.GMAIL_SMTP_PORT }}
+          GMAIL_SMTP_USERNAME: ${{ secrets.GMAIL_SMTP_USERNAME }}
+          GMAIL_SMTP_PASSWORD: ${{ secrets.GMAIL_SMTP_PASSWORD }}
         run: |
           cat ${{ steps.task-def.outputs.task-definition }} > task-definition-tmp.json
           jq --arg GMAIL_SMTP_HOST "$GMAIL_SMTP_HOST" \
