@@ -32,4 +32,4 @@ build/
 .vscode/
 *.env.*
 
-.DS_S
+.DS_Store
