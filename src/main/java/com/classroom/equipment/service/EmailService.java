@@ -1,6 +1,6 @@
-package com.classroom.equipment.layer.application.service;
+package com.classroom.equipment.service;
 
-import com.classroom.equipment.layer.application.models.EmailMessage;
+import com.classroom.equipment.dtos.EmailMessage;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;

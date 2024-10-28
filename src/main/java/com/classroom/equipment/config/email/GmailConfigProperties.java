@@ -1,4 +1,4 @@
-package com.classroom.equipment.config.email.properties;
+package com.classroom.equipment.config.email;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
