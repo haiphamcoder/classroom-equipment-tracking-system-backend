@@ -46,6 +46,7 @@ jobs:
       REPOSITORY: ${{ secrets.REPOSITORY }}
       IMAGE: ${{ secrets.IMAGE }}
       WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+      SA_EMAIL: ${{ secrets.SA_EMAIL }}
 
     steps:
       - name: Checkout
@@ -57,6 +58,7 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.SA_EMAIL }}
 
       # Authenticate Docker to Google Cloud Artifact Registry.
       - name: Docker Auth
