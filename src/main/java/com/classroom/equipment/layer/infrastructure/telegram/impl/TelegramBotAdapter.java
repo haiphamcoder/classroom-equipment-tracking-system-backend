@@ -1,7 +1,7 @@
 package com.classroom.equipment.layer.infrastructure.telegram.impl;
 
 import com.classroom.equipment.config.telegram.properties.TelegramBotProperties;
-import com.classroom.equipment.layer.application.models.TelegramMessageType;
+import com.classroom.equipment.dtos.TelegramMessageType;
 import com.classroom.equipment.layer.infrastructure.telegram.ITelegramBotAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.asynchttpclient.AsyncHttpClient;

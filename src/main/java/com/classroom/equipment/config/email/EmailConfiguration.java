@@ -1,6 +1,5 @@
 package com.classroom.equipment.config.email;
 
-import com.classroom.equipment.config.email.properties.GmailConfigProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +30,7 @@ public class EmailConfiguration {
     @Bean(name = "emailTemplate")
     public TemplateEngine loadEmailTemplate(){
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setPrefix("/templates/");
+        templateResolver.setPrefix("/templates/email/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setCharacterEncoding("UTF-8");

@@ -1,4 +1,4 @@
-package com.classroom.equipment.layer.application.models;
+package com.classroom.equipment.dtos;
 
 public enum TelegramMessageType {
     DEFAULT,

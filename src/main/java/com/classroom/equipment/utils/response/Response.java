@@ -1,4 +1,4 @@
-package com.classroom.equipment.utility.response;
+package com.classroom.equipment.utils.response;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
