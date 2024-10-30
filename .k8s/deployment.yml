@@ -5,7 +5,7 @@ metadata:
   labels:
     app: classroom-equipment-tracking-system
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: classroom-equipment-tracking-system
@@ -21,8 +21,8 @@ spec:
             - containerPort: 8081
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: "1Gi"
+              cpu: "1000m"
             limits:
               memory: "1Gi"
               cpu: "1000m"
