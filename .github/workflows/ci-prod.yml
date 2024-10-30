@@ -1,4 +1,4 @@
-name: CI
+name: CI Production
 
 on:
   push:
@@ -20,7 +20,8 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
       env:
-        GMAIL_SMTP_HOST: ${{ vars.GMAIL_SMTP_HOST }}
-        GMAIL_SMTP_PORT: ${{ vars.GMAIL_SMTP_PORT }}
-        GMAIL_SMTP_USERNAME: ${{ vars.GMAIL_SMTP_USERNAME }}
-        GMAIL_SMTP_PASSWORD: ${{ vars.GMAIL_SMTP_PASSWORD }}
+        GMAIL_SMTP_HOST: ${{ secrets.GMAIL_SMTP_HOST }}
+        GMAIL_SMTP_PORT: ${{ secrets.GMAIL_SMTP_PORT }}
+        GMAIL_SMTP_USERNAME: ${{ secrets.GMAIL_SMTP_USERNAME }}
+        GMAIL_SMTP_PASSWORD: ${{ secrets.GMAIL_SMTP_PASSWORD }}
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

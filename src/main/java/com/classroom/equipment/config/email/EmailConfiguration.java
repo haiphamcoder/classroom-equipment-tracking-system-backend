@@ -30,7 +30,7 @@ public class EmailConfiguration {
     @Bean(name = "emailTemplate")
     public TemplateEngine loadEmailTemplate(){
         final ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setPrefix("/templates/");
+        templateResolver.setPrefix("/templates/email/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(TemplateMode.HTML);
         templateResolver.setCharacterEncoding("UTF-8");
