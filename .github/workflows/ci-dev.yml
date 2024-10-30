@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: development
 
     steps:
@@ -30,7 +30,7 @@ jobs:
 
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     environment: development
 
     permissions:
@@ -80,9 +80,12 @@ jobs:
           docker push $DOCKER_TAG
 
       # Set up kustomize.
-      - name: 'Install Kustomize using gcloud'
+      - name: 'Download and install Kustomize'
         run: |
-          gcloud components install kustomize
+          curl -sLo kustomize.tar.gz https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize/v5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz
+          tar -xzf kustomize.tar.gz
+          chmod +x kustomize
+          mv kustomize /usr/local/bin/kustomize
 
       # Replace variables in the kustomization file.
       - name: Replace variables in kustomization file
