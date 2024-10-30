@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: classroom-equipment-tracking-system
+  labels:
+    app: classroom-equipment-tracking-system
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: classroom-equipment-tracking-system
+  template:
+    metadata:
+      labels:
+        app: classroom-equipment-tracking-system
+    spec:
+      containers:
+        - name: classroom-equipment-container
+          image: ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${GITHUB_SHA}
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          env:
+            - name: GMAIL_SMTP_HOST
+              value: ${GMAIL_SMTP_HOST}
+            - name: GMAIL_SMTP_PORT
+              value: ${GMAIL_SMTP_PORT}
+            - name: GMAIL_SMTP_USERNAME
+              value: ${GMAIL_SMTP_USERNAME}
+            - name: GMAIL_SMTP_PASSWORD
+              value: ${GMAIL_SMTP_PASSWORD}
+            - name: TELEGRAM_BOT_TOKEN
+              value: ${TELEGRAM_BOT_TOKEN}
