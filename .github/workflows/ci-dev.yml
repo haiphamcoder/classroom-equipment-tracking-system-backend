@@ -80,10 +80,9 @@ jobs:
           docker push $DOCKER_TAG
 
       # Set up kustomize.
-      - name: Set up kustomize
-        run: |-
-          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.5.0/kustomize_v5.5.0_linux_amd64.tar.gz
-          chmod u+x ./kustomize
+      - name: 'Install Kustomize using gcloud'
+        run: |
+          gcloud components install kustomize
 
       # Replace variables in the kustomization file.
       - name: Replace variables in kustomization file
@@ -107,6 +106,6 @@ jobs:
       # Deploy the Docker image to the GKE cluster.
       - name: Deploy to GKE
         run: |-
-          ./kustomize build .k8s/ | kubectl apply -f -
+          kustomize build .k8s/ | kubectl apply -f -
           kubectl rollout status deployment/${{ env.DEPLOYMENT_NAME }}
           kubectl get services -o wide
