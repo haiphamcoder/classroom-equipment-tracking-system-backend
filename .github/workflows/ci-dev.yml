@@ -82,7 +82,7 @@ jobs:
       # Set up kustomize.
       - name: Set up kustomize
         run: |-
-          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.4.3/kustomize_v5.4.3_linux_amd64.tar.gz
+          curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv5.5.0/kustomize_v5.5.0_linux_amd64.tar.gz
           chmod u+x ./kustomize
 
       # Replace variables in the kustomization file.
