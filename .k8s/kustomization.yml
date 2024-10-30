@@ -6,4 +6,4 @@ resources:
 
 images:
   - name: ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}
-    newTag: ${GITHUB_SHA}
+    newTag: dev
