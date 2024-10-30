@@ -2,18 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [ "main" , "feature-dev" ]
-  pull_request:
-    branches: [ "main" , "feature-dev" ]
+    branches: [ "main" ]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        environment: [ development, staging, production ]
+    environment: production
 
     steps:
     - uses: actions/checkout@v4
