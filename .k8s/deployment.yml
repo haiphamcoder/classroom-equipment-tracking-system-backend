@@ -24,15 +24,15 @@ spec:
             - containerPort: 8081
           env:
             - name: GMAIL_SMTP_HOST
-              value: ${GMAIL_SMTP_HOST}
+              value: "${GMAIL_SMTP_HOST}"
             - name: GMAIL_SMTP_PORT
-              value: ${GMAIL_SMTP_PORT}
+              value: "${GMAIL_SMTP_PORT}"
             - name: GMAIL_SMTP_USERNAME
-              value: ${GMAIL_SMTP_USERNAME}
+              value: "${GMAIL_SMTP_USERNAME}"
             - name: GMAIL_SMTP_PASSWORD
-              value: ${GMAIL_SMTP_PASSWORD}
+              value: "${GMAIL_SMTP_PASSWORD}"
             - name: TELEGRAM_BOT_TOKEN
-              value: ${TELEGRAM_BOT_TOKEN}
+              value: "${TELEGRAM_BOT_TOKEN}"
           resources:
             requests:
               memory: "512Mi"
