@@ -1,22 +1,23 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: "apps/v1"
+kind: "Deployment"
 metadata:
-  name: classroom-equipment-tracking-system
+  name: "classroom-equipment-tracking-system"
+  namespace: "default"
   labels:
-    app: classroom-equipment-tracking-system
+    app: "classroom-equipment-tracking-system"
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: classroom-equipment-tracking-system
+      app: "classroom-equipment-tracking-system"
   template:
     metadata:
       labels:
-        app: classroom-equipment-tracking-system
+        app: "classroom-equipment-tracking-system"
     spec:
       containers:
-        - name: classroom-equipment-container
-          image: ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:dev
+        - name: "classroom-equipment-container"
+          image: "${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:dev"
           ports:
             - containerPort: 8081
           resources:
@@ -37,3 +38,5 @@ spec:
               value: "${GMAIL_SMTP_PASSWORD}"
             - name: TELEGRAM_BOT_TOKEN
               value: "${TELEGRAM_BOT_TOKEN}"
+      imagePullSecrets:
+        - name: "gar-auth"

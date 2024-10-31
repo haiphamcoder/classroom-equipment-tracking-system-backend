@@ -63,7 +63,9 @@ jobs:
       # Authenticate Docker to use Google Artifact Registry.
       - name: Configure Docker to use Google Artifact Registry
         run: |
-          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{ env.GAR_LOCATION }}-docker.pkg.dev
+          TOKEN=$(gcloud auth print-access-token)
+          echo $TOKEN | docker login -u oauth2accesstoken --password-stdin https://${{ env.GAR_LOCATION }}-docker.pkg.dev
+          echo "TOKEN=${TOKEN}" >> $GITHUB_ENV
 
       # Get the GKE credentials so we can deploy to the cluster.
       - name: Set up GKE credentials
