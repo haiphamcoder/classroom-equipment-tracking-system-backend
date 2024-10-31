@@ -1,12 +1,15 @@
-name: CI Development
+name: Check Pull Request
 
 on:
-  push:
-    branches: [ "feature-dev" ]
+  pull_request:
+    branches:
+      - feature-dev
+      - main
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build and Test
+    runs-on: ubuntu-20.04
     environment: development
 
     steps:

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: ${DEPLOYMENT_NAME}
+  labels:
+    app: development
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: development
+  template:
+    metadata:
+      labels:
+        app: development
+    spec:
+      containers:
+        - name: ${DEPLOYMENT_NAME}
+          image: ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}:${TAG}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+          env:
+            - name: GMAIL_SMTP_HOST
+              value: "${GMAIL_SMTP_HOST}"
+            - name: GMAIL_SMTP_PORT
+              value: "${GMAIL_SMTP_PORT}"
+            - name: GMAIL_SMTP_USERNAME
+              value: "${GMAIL_SMTP_USERNAME}"
+            - name: GMAIL_SMTP_PASSWORD
+              value: "${GMAIL_SMTP_PASSWORD}"
+            - name: TELEGRAM_BOT_TOKEN
+              value: "${TELEGRAM_BOT_TOKEN}"
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "256m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1000m"
+      imagePullSecrets:
+        - name: gar-auth
