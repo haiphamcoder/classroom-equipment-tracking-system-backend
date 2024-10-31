@@ -33,6 +33,12 @@ spec:
               value: "${GMAIL_SMTP_PASSWORD}"
             - name: TELEGRAM_BOT_TOKEN
               value: "${TELEGRAM_BOT_TOKEN}"
+            - name: EQUIPMENT_DATASOURCE_URL
+              value: "${EQUIPMENT_DATASOURCE_URL}"
+            - name: EQUIPMENT_DATASOURCE_USERNAME
+              value: "${EQUIPMENT_DATASOURCE_USERNAME}"
+            - name: EQUIPMENT_DATASOURCE_PASSWORD
+              value: "${EQUIPMENT_DATASOURCE_PASSWORD}"
           resources:
             requests:
               memory: "512Mi"
