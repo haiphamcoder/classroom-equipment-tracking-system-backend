@@ -107,6 +107,7 @@ jobs:
           sed -i "s/\${REPOSITORY}/${{ env.REPOSITORY }}/g" .k8s/kustomization.yml
           sed -i "s/\${IMAGE}/${{ env.IMAGE }}/g" .k8s/kustomization.yml
           sed -i "s/\${GITHUB_SHA}/${{ github.sha }}/g" .k8s/kustomization.yml
+          sed -i "s/\${TOKEN}/${{ env.TOKEN }}/g" .k8s/kustomization.yml
 
       # Deploy the Docker image to the GKE cluster.
       - name: Deploy to GKE
