@@ -48,6 +48,7 @@ jobs:
       SA_EMAIL: ${{ secrets.SA_EMAIL }}
       GITHUB_SHA: ${{ github.sha }}
       GITHUB_REF: ${{ github.ref }}
+      LOAD_BALANCER_IP: ${{ secrets.LOAD_BALANCER_IP }}
 
     steps:
       - name: Checkout code
@@ -104,6 +105,7 @@ jobs:
       - name: Replace variables in service file
         run: |-
           sed -i "s/\${DEPLOYMENT_NAME}/${{ env.DEPLOYMENT_NAME }}/g" .k8s/service.yml
+          sed -i "s/\${LOAD_BALANCER_IP}/${{ env.LOAD_BALANCER_IP }}/g" .k8s/service.yml
 
       - name: Replace variables in deployment file
         run: |-
