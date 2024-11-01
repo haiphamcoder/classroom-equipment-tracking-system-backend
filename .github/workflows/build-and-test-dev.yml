@@ -1,12 +1,17 @@
-name: CI Development
+name: Build and Test CI/CD Development Environment
 
 on:
   push:
-    branches: [ "feature-dev" ]
+    branches:
+      - feature-dev
+  pull_request:
+    branches:
+      - feature-dev
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build and Test
+    runs-on: ubuntu-20.04
     environment: development
 
     steps:
@@ -25,3 +30,8 @@ jobs:
           GMAIL_SMTP_USERNAME: ${{ secrets.GMAIL_SMTP_USERNAME }}
           GMAIL_SMTP_PASSWORD: ${{ secrets.GMAIL_SMTP_PASSWORD }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          EQUIPMENT_DATASOURCE_HOST: ${{ secrets.EQUIPMENT_DATASOURCE_HOST }}
+          EQUIPMENT_DATASOURCE_PORT: ${{ secrets.EQUIPMENT_DATASOURCE_PORT }}
+          EQUIPMENT_DATASOURCE_DB: ${{ secrets.EQUIPMENT_DATASOURCE_DB }}
+          EQUIPMENT_DATASOURCE_USERNAME: ${{ secrets.EQUIPMENT_DATASOURCE_USERNAME }}
+          EQUIPMENT_DATASOURCE_PASSWORD: ${{ secrets.EQUIPMENT_DATASOURCE_PASSWORD }}

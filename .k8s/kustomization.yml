@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yml
+  - service.yml
+
+images:
+  - name: ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}
+    newTag: ${TAG}
+
+secretGenerator:
+  - name: gar-auth
+    literals:
+      - .dockerconfigjson={"auths":{"${GAR_LOCATION}-docker.pkg.dev":{"username":"oauth2accesstoken","password":"${TOKEN}"}}}
+    type: kubernetes.io/dockerconfigjson
