@@ -112,20 +112,20 @@ jobs:
 
       - name: Replace variables in deployment file
         run: |-
-          sed -i "s/\${DEPLOYMENT_NAME}/${{ env.DEPLOYMENT_NAME }}/g" .k8s/deployment.yml
-          sed -i "s/\${GMAIL_SMTP_HOST}/${{ secrets.GMAIL_SMTP_HOST }}/g" .k8s/deployment.yml
-          sed -i "s/\${GMAIL_SMTP_PORT}/${{ secrets.GMAIL_SMTP_PORT }}/g" .k8s/deployment.yml
-          sed -i "s/\${GMAIL_SMTP_USERNAME}/${{ secrets.GMAIL_SMTP_USERNAME }}/g" .k8s/deployment.yml
-          sed -i "s/\${GMAIL_SMTP_PASSWORD}/${{ secrets.GMAIL_SMTP_PASSWORD }}/g" .k8s/deployment.yml
-          sed -i "s/\${TELEGRAM_BOT_TOKEN}/${{ secrets.TELEGRAM_BOT_TOKEN }}/g" .k8s/deployment.yml
-          sed -i "s/\${EQUIPMENT_DATASOURCE_URL}/${{ secrets.EQUIPMENT_DATASOURCE_URL }}/g" .k8s/deployment.yml
-          sed -i "s/\${EQUIPMENT_DATASOURCE_USERNAME}/${{ secrets.EQUIPMENT_DATASOURCE_USERNAME }}/g" .k8s/deployment.yml
-          sed -i "s/\${EQUIPMENT_DATASOURCE_PASSWORD}/${{ secrets.EQUIPMENT_DATASOURCE_PASSWORD }}/g" .k8s/deployment.yml
-          sed -i "s/\${GAR_LOCATION}/${{ env.GAR_LOCATION }}/g" .k8s/deployment.yml
-          sed -i "s/\${PROJECT_ID}/${{ env.PROJECT_ID }}/g" .k8s/deployment.yml
-          sed -i "s/\${REPOSITORY}/${{ env.REPOSITORY }}/g" .k8s/deployment.yml
-          sed -i "s/\${IMAGE}/${{ env.IMAGE }}/g" .k8s/deployment.yml
-          sed -i "s/\${TAG}/${{ env.GITHUB_SHA }}/g" .k8s/deployment.yml
+          sed -i "s|\${DEPLOYMENT_NAME}|${{ env.DEPLOYMENT_NAME }}|g" .k8s/deployment.yml
+          sed -i "s|\${GMAIL_SMTP_HOST}|${{ secrets.GMAIL_SMTP_HOST }}|g" .k8s/deployment.yml
+          sed -i "s|\${GMAIL_SMTP_PORT}|${{ secrets.GMAIL_SMTP_PORT }}|g" .k8s/deployment.yml
+          sed -i "s|\${GMAIL_SMTP_USERNAME}|${{ secrets.GMAIL_SMTP_USERNAME }}|g" .k8s/deployment.yml
+          sed -i "s|\${GMAIL_SMTP_PASSWORD}|${{ secrets.GMAIL_SMTP_PASSWORD }}|g" .k8s/deployment.yml
+          sed -i "s|\${TELEGRAM_BOT_TOKEN}|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" .k8s/deployment.yml
+          sed -i "s|\${EQUIPMENT_DATASOURCE_URL}|${{ secrets.EQUIPMENT_DATASOURCE_URL }}|g" .k8s/deployment.yml
+          sed -i "s|\${EQUIPMENT_DATASOURCE_USERNAME}|${{ secrets.EQUIPMENT_DATASOURCE_USERNAME }}|g" .k8s/deployment.yml
+          sed -i "s|\${EQUIPMENT_DATASOURCE_PASSWORD}|${{ secrets.EQUIPMENT_DATASOURCE_PASSWORD }}|g" .k8s/deployment.yml
+          sed -i "s|\${GAR_LOCATION}|${{ env.GAR_LOCATION }}|g" .k8s/deployment.yml
+          sed -i "s|\${PROJECT_ID}|${{ env.PROJECT_ID }}|g" .k8s/deployment.yml
+          sed -i "s|\${REPOSITORY}|${{ env.REPOSITORY }}|g" .k8s/deployment.yml
+          sed -i "s|\${IMAGE}|${{ env.IMAGE }}|g" .k8s/deployment.yml
+          sed -i "s|\${TAG}|${{ env.GITHUB_SHA }}|g" .k8s/deployment.yml
 
       - name: Deploy to GKE
         run: |-
