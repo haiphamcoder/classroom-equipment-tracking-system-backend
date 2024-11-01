@@ -1,34 +1,10 @@
-name: CI/CD Development Environment
+name: Deploy Development Environment
 
 on:
   push:
     branches: [ "feature-dev" ]
 
 jobs:
-  build:
-    name: Build and Test
-    runs-on: ubuntu-20.04
-    environment: development
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
-        env:
-          GMAIL_SMTP_HOST: ${{ secrets.GMAIL_SMTP_HOST }}
-          GMAIL_SMTP_PORT: ${{ secrets.GMAIL_SMTP_PORT }}
-          GMAIL_SMTP_USERNAME: ${{ secrets.GMAIL_SMTP_USERNAME }}
-          GMAIL_SMTP_PASSWORD: ${{ secrets.GMAIL_SMTP_PASSWORD }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          EQUIPMENT_DATASOURCE_URL: ${{ secrets.EQUIPMENT_DATASOURCE_URL }}
-          EQUIPMENT_DATASOURCE_USERNAME: ${{ secrets.EQUIPMENT_DATASOURCE_USERNAME }}
-          EQUIPMENT_DATASOURCE_PASSWORD: ${{ secrets.EQUIPMENT_DATASOURCE_PASSWORD }}
 
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
@@ -118,7 +94,9 @@ jobs:
           sed -i "s|\${GMAIL_SMTP_USERNAME}|${{ secrets.GMAIL_SMTP_USERNAME }}|g" .k8s/deployment.yml
           sed -i "s|\${GMAIL_SMTP_PASSWORD}|${{ secrets.GMAIL_SMTP_PASSWORD }}|g" .k8s/deployment.yml
           sed -i "s|\${TELEGRAM_BOT_TOKEN}|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" .k8s/deployment.yml
-          sed -i "s|\${EQUIPMENT_DATASOURCE_URL}|${{ secrets.EQUIPMENT_DATASOURCE_URL }}|g" .k8s/deployment.yml
+          sed -i "s|\${EQUIPMENT_DATASOURCE_HOST}|${{ secrets.EQUIPMENT_DATASOURCE_HOST }}|g" .k8s/deployment.yml
+          sed -i "s|\${EQUIPMENT_DATASOURCE_PORT}|${{ secrets.EQUIPMENT_DATASOURCE_PORT }}|g" .k8s/deployment.yml
+          sed -i "s|\${EQUIPMENT_DATASOURCE_DB}|${{ secrets.EQUIPMENT_DATASOURCE_DB }}|g" .k8s/deployment.yml
           sed -i "s|\${EQUIPMENT_DATASOURCE_USERNAME}|${{ secrets.EQUIPMENT_DATASOURCE_USERNAME }}|g" .k8s/deployment.yml
           sed -i "s|\${EQUIPMENT_DATASOURCE_PASSWORD}|${{ secrets.EQUIPMENT_DATASOURCE_PASSWORD }}|g" .k8s/deployment.yml
           sed -i "s|\${GAR_LOCATION}|${{ env.GAR_LOCATION }}|g" .k8s/deployment.yml

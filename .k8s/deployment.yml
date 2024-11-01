@@ -33,8 +33,12 @@ spec:
               value: "${GMAIL_SMTP_PASSWORD}"
             - name: TELEGRAM_BOT_TOKEN
               value: "${TELEGRAM_BOT_TOKEN}"
-            - name: EQUIPMENT_DATASOURCE_URL
-              value: "${EQUIPMENT_DATASOURCE_URL}"
+            - name: EQUIPMENT_DATASOURCE_HOST
+              value: "${EQUIPMENT_DATASOURCE_HOST}"
+            - name: EQUIPMENT_DATASOURCE_PORT
+              value: "${EQUIPMENT_DATASOURCE_PORT}"
+            - name: EQUIPMENT_DATASOURCE_DB
+              value: "${EQUIPMENT_DATASOURCE_DB}"
             - name: EQUIPMENT_DATASOURCE_USERNAME
               value: "${EQUIPMENT_DATASOURCE_USERNAME}"
             - name: EQUIPMENT_DATASOURCE_PASSWORD
