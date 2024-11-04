@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Random;
@@ -29,7 +30,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
     @Value("${telegram.bot.token}")
     private String botToken;
 
-    private final Random random = new Random();
+    private final Random random = new SecureRandom();
     private final SnowflakeIdGenerator idGenerator = SnowflakeIdGenerator.getInstance();
 
     private final Map<String, UserSession> userSessions = new ConcurrentHashMap<>();
