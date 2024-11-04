@@ -93,6 +93,7 @@ jobs:
           sed -i "s|\${GMAIL_SMTP_PORT}|${{ secrets.GMAIL_SMTP_PORT }}|g" .k8s/deployment.yml
           sed -i "s|\${GMAIL_SMTP_USERNAME}|${{ secrets.GMAIL_SMTP_USERNAME }}|g" .k8s/deployment.yml
           sed -i "s|\${GMAIL_SMTP_PASSWORD}|${{ secrets.GMAIL_SMTP_PASSWORD }}|g" .k8s/deployment.yml
+          sed -i "s|\${TELEGRAM_BOT_USERNAME}|${{ secrets.TELEGRAM_BOT_USERNAME }}|g" .k8s/deployment.yml
           sed -i "s|\${TELEGRAM_BOT_TOKEN}|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" .k8s/deployment.yml
           sed -i "s|\${EQUIPMENT_DATASOURCE_HOST}|${{ secrets.EQUIPMENT_DATASOURCE_HOST }}|g" .k8s/deployment.yml
           sed -i "s|\${EQUIPMENT_DATASOURCE_PORT}|${{ secrets.EQUIPMENT_DATASOURCE_PORT }}|g" .k8s/deployment.yml
