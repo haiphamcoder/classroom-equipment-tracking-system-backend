@@ -67,6 +67,20 @@ public class EmailService {
         }
     }
 
+    public void sendEmail(String to, String subject, String text) {
+        MimeMessage message = gmailSender.createMimeMessage();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, StandardCharsets.UTF_8.name());
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(text, true);
+            queue.add(message);
+        } catch (MessagingException e) {
+            log.error(ERROR_SENDING_EMAIL, e);
+        }
+    }
+
     public void sendEmail(EmailMessage mailInfo, String template) {
         MimeMessage message = gmailSender.createMimeMessage();
 
