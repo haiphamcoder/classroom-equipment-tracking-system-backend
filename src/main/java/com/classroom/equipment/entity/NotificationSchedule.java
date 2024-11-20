@@ -22,10 +22,6 @@ public class NotificationSchedule {
     @JsonProperty("notification_id")
     private Long notificationId;
 
-    @Column(name = "order_id", nullable = false)
-    @JsonProperty("order_id")
-    private Long orderId;
-
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private BorrowOrders order;

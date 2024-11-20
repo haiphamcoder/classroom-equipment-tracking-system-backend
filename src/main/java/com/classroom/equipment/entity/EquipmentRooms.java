@@ -24,17 +24,9 @@ public class EquipmentRooms {
     @JsonProperty("room_name")
     private String roomName;
 
-    @Column(name = "building_id", nullable = false)
-    @JsonProperty("building_id")
-    private Long buildingId;
-
     @ManyToOne
     @JoinColumn(name = "building_id", referencedColumnName = "building_id", nullable = false)
     private Buildings building;
-
-    @Column(name = "manager_id")
-    @JsonProperty("manager_id")
-    private Long managerId;
 
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "staff_id")

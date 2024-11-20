@@ -22,17 +22,9 @@ public class ReturnRecords {
     @JsonProperty("record_id")
     private Long recordId;
 
-    @Column(name = "order_id", nullable = false)
-    @JsonProperty("order_id")
-    private Long orderId;
-
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
     private BorrowOrders order;
-
-    @Column(name = "staff_id", nullable = false)
-    @JsonProperty("staff_id")
-    private Long staffId;
 
     @ManyToOne
     @JoinColumn(name = "staff_id", referencedColumnName = "staff_id")

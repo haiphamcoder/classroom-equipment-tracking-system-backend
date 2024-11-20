@@ -22,25 +22,13 @@ public class BorrowOrders {
     @JsonProperty("order_id")
     private Long orderId;
 
-    @Column(name = "borrower_id", nullable = false)
-    @JsonProperty("borrower_id")
-    private Long borrowerId;
-
     @ManyToOne
     @JoinColumn(name = "borrower_id", referencedColumnName = "borrower_id")
     private Borrowers borrower;
 
-    @Column(name = "equipment_id", nullable = false)
-    @JsonProperty("equipment_id")
-    private Long equipmentId;
-
     @ManyToOne
     @JoinColumn(name = "equipment_id", referencedColumnName = "equipment_id")
     private Equipment equipment;
-
-    @Column(name = "staff_id", nullable = false)
-    @JsonProperty("staff_id")
-    private Long staffId;
 
     @ManyToOne
     @JoinColumn(name = "staff_id", referencedColumnName = "staff_id")
