@@ -27,7 +27,7 @@ public class Staff {
     @ManyToOne
     @JoinColumn(name = "building_id", referencedColumnName = "building_id", nullable = false)
     @JsonProperty("building_id")
-    private Buildings buildingId;
+    private Building buildingId;
 
     @Column(name = "email", nullable = false, unique = true)
     @JsonProperty("email")
