@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@Entity(name = "equipment_rooms")
-public class EquipmentRooms {
+@Entity(name = "equipment_room")
+public class EquipmentRoom {
     @Id
     @Column(name = "room_id")
     @JsonProperty("room_id")
@@ -26,7 +26,7 @@ public class EquipmentRooms {
 
     @ManyToOne
     @JoinColumn(name = "building_id", referencedColumnName = "building_id", nullable = false)
-    private Buildings building;
+    private Building building;
 
     @ManyToOne
     @JoinColumn(name = "manager_id", referencedColumnName = "staff_id")

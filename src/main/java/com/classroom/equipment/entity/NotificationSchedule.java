@@ -24,7 +24,7 @@ public class NotificationSchedule {
 
     @ManyToOne
     @JoinColumn(name = "order_id", referencedColumnName = "order_id")
-    private BorrowOrders order;
+    private BorrowOrder order;
 
     @Column(name = "recipient_email")
     @JsonProperty("recipient_email")

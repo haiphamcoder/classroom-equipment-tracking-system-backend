@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@Entity(name = "borrow_orders")
-public class BorrowOrders {
+@Entity(name = "borrow_order")
+public class BorrowOrder {
     @Id
     @Column(name = "order_id")
     @JsonProperty("order_id")
@@ -24,7 +24,7 @@ public class BorrowOrders {
 
     @ManyToOne
     @JoinColumn(name = "borrower_id", referencedColumnName = "borrower_id")
-    private Borrowers borrower;
+    private Borrower borrower;
 
     @ManyToOne
     @JoinColumn(name = "equipment_id", referencedColumnName = "equipment_id")

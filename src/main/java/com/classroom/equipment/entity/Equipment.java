@@ -26,7 +26,7 @@ public class Equipment {
 
     @ManyToOne
     @JoinColumn(name = "room_id", referencedColumnName = "room_id")
-    private EquipmentRooms room;
+    private EquipmentRoom room;
 
     @Column(name = "status", nullable = false)
     @JsonProperty("status")
