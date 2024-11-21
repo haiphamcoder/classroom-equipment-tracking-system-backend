@@ -15,8 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.ALWAYS)
-@Entity(name = "buildings")
-public class Buildings {
+@Entity(name = "building")
+public class Building {
     @Id
     @Column(name = "building_id")
     @JsonProperty("building_id")
