@@ -1,61 +1,41 @@
 package com.classroom.equipment.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.ALWAYS)
+@Builder
 @Entity(name = "staff_login")
-public class StaffLogin {
+public class StaffLogin extends BaseModel {
     @Id
-    @Column(name = "staff_id")
-    @JsonProperty("staff_id")
-    private Long staffId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "staff_id", referencedColumnName = "staff_id")
+    @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;
 
-    @Column(name = "username", nullable = false, unique = true)
-    @JsonProperty("username")
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "salt", nullable = false)
-    @JsonProperty("salt")
+    @Column(nullable = false)
     private String salt;
 
-    @Column(name = "password_hash", nullable = false)
-    @JsonProperty("password_hash")
+    @Column(nullable = false)
     private String passwordHash;
 
-    @Column(name = "reset_token")
-    @JsonProperty("reset_token")
     private String resetToken;
 
-    @Column(name = "token_expiration")
-    @JsonProperty("token_expiration")
     private LocalDateTime tokenExpiration;
 
-    @Column(name = "last_login")
-    @JsonProperty("last_login")
     private LocalDateTime lastLogin;
 
-    @Column(name = "created_at", nullable = false)
-    @JsonProperty("created_at")
-    private LocalDateTime createdTime;
-
-    @Column(name = "updated_at", nullable = false)
-    @JsonProperty("updated_at")
-    private LocalDateTime updatedTime;
+    @Column(nullable = false)
+    private boolean firstLogin = true;
 }

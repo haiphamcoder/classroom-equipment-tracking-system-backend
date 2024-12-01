@@ -2,8 +2,8 @@ package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.constant.CommonConstants;
 import com.classroom.equipment.config.telegram.properties.TelegramBotProperties;
-import com.classroom.equipment.dao.INotificationRecipientDao;
-import com.classroom.equipment.dao.IUserDao;
+import com.classroom.equipment.repository.NotificationRecipientRepository;
+import com.classroom.equipment.repository.UserRepository;
 import com.classroom.equipment.entity.NotificationRecipient;
 import com.classroom.equipment.entity.User;
 import com.classroom.equipment.dtos.UserSession;
@@ -30,8 +30,8 @@ import java.util.concurrent.TimeUnit;
 public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
     private final Random random = new SecureRandom();
     private final EmailService emailService;
-    private final IUserDao userDao;
-    private final INotificationRecipientDao notificationRecipientDao;
+    private final UserRepository userRepository;
+    private final NotificationRecipientRepository notiRecipientRepository;
     private final TelegramClient telegramClient;
 
     private final Cache<String, UserSession> userSessions = CacheBuilder.newBuilder()
@@ -41,11 +41,11 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
 
     public MyTelegramBot(@Qualifier("telegramBotProperties") TelegramBotProperties telegramBotProperties,
                          EmailService emailService,
-                         IUserDao userDao,
-                         INotificationRecipientDao notificationRecipientDao) {
+                         UserRepository userRepository,
+                         NotificationRecipientRepository notiRecipientRepository) {
         this.emailService = emailService;
-        this.userDao = userDao;
-        this.notificationRecipientDao = notificationRecipientDao;
+        this.userRepository = userRepository;
+        this.notiRecipientRepository = notiRecipientRepository;
         this.telegramClient = new OkHttpTelegramClient(telegramBotProperties.getToken());
     }
 
@@ -101,7 +101,7 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
         User user;
         try {
             int userId = Integer.parseInt(input);
-            user = userDao.findById(userId);
+            user = userRepository.findById(userId).orElse(null);
         } catch (NumberFormatException e) {
             sendMessage(chatId, "Invalid format.\nPlease use /start to try again.");
             userSessions.invalidate(chatId);
@@ -134,7 +134,7 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
             recipient.setUserId(session.getUserId());
             recipient.setTelegramId(chatId);
             recipient.setEmail(session.getEmail());
-            notificationRecipientDao.save(recipient);
+            notiRecipientRepository.save(recipient);
             userSessions.invalidate(chatId);
             sendMessage(chatId, "Verification successful!\nYour Telegram ID has been registered.");
         } else {
