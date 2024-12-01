@@ -18,5 +18,5 @@ public class Building extends BaseModel {
     private String buildingName;
 
     @Column(nullable = false)
-    private int status;
+    private boolean status;
 }

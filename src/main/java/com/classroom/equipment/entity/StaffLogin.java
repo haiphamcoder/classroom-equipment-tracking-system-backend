@@ -35,4 +35,7 @@ public class StaffLogin extends BaseModel {
     private LocalDateTime tokenExpiration;
 
     private LocalDateTime lastLogin;
+
+    @Column(nullable = false)
+    private boolean firstLogin = true;
 }
