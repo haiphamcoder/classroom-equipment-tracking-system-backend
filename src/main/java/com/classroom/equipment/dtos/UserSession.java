@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserSession {
-    private int userId;
+    private Long userId;
     private String email;
     private String otp;
     private LocalDateTime otpGeneratedTime;

@@ -1,44 +1,35 @@
 package com.classroom.equipment.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.ALWAYS)
+@Builder
 @Entity(name = "return_record")
-public class ReturnRecord {
+public class ReturnRecord extends BaseModel {
     @Id
-    @Column(name = "record_id")
-    @JsonProperty("record_id")
-    private Long recordId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
     private BorrowOrder order;
 
     @ManyToOne
-    @JoinColumn(name = "staff_id", referencedColumnName = "staff_id")
+    @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;
 
-    @Column(name = "return_time", nullable = false)
-    @JsonProperty("return_time")
+    @Column(nullable = false)
     private LocalDateTime returnTime;
 
-    @Column(name = "equipment_status", nullable = false)
-    @JsonProperty("equipment_status")
+    @Column(nullable = false)
     private int equipmentStatus;
 
-    @Column(name = "status", nullable = false)
-    @JsonProperty("status")
+    @Column(nullable = false)
     private int status;
 }

@@ -1,32 +1,22 @@
 package com.classroom.equipment.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.ALWAYS)
+@Builder
 @Entity(name = "building")
-public class Building {
+public class Building extends BaseModel {
     @Id
-    @Column(name = "building_id")
-    @JsonProperty("building_id")
-    private Long buildingId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "building_name", nullable = false)
-    @JsonProperty("building_name")
+    @Column(nullable = false)
     private String buildingName;
 
-    @Column(name = "status", nullable = false)
-    @JsonProperty("status")
+    @Column(nullable = false)
     private int status;
 }
