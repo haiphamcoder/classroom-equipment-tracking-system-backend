@@ -1,48 +1,32 @@
 package com.classroom.equipment.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.ALWAYS)
 @Entity(name = "borrower")
-public class Borrower {
+public class Borrower extends BaseModel {
     @Id
-    @Column(name = "borrower_id")
-    @JsonProperty("borrower_id")
-    private Long borrowerId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    @Column(name = "name", nullable = false)
-    @JsonProperty("name")
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "type", nullable = false)
-    @JsonProperty("type")
+    @Column(nullable = false)
     private int type;
 
-    @Column(name = "email", nullable = false, unique = true)
-    @JsonProperty("email")
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "telegram_id")
-    @JsonProperty("telegram_id")
     private String telegramId;
 
-    @Column(name = "locked")
-    @JsonProperty("locked")
     private boolean locked;
 
-    @Column(name = "status", nullable = false)
-    @JsonProperty("status")
+    @Column(nullable = false)
     private int status;
+
 }

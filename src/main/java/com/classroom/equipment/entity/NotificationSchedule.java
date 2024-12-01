@@ -1,48 +1,34 @@
 package com.classroom.equipment.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.ALWAYS)
+@Builder
 @Entity(name = "notification_schedule")
-public class NotificationSchedule {
+public class NotificationSchedule extends BaseModel {
     @Id
-    @Column(name = "notification_id")
-    @JsonProperty("notification_id")
-    private Long notificationId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "order_id")
+    @JoinColumn(name = "order_id", referencedColumnName = "id")
     private BorrowOrder order;
 
-    @Column(name = "recipient_email")
-    @JsonProperty("recipient_email")
     private String recipientEmail;
 
-    @Column(name = "recipient_telegram_id")
-    @JsonProperty("recipient_telegram_id")
     private String recipientTelegramId;
 
-    @Column(name = "notification_content")
-    @JsonProperty("notification_content")
     private String notificationContent;
 
-    @Column(name = "status", nullable = false)
-    @JsonProperty("status")
+    @Column(nullable = false)
     private int status;
 
-    @Column(name = "created_at", nullable = false)
-    @JsonProperty("created_time")
+    @Column(nullable = false)
     private LocalDateTime createdTime;
 }

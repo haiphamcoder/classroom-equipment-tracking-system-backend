@@ -14,13 +14,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
         entityManagerFactoryRef = "equipmentTrackingEntityManagerFactory",
         transactionManagerRef = "equipmentTrackingTransactionManager",
-        basePackages = {"com.classroom.equipment.dao"}
+        basePackages = {"com.classroom.equipment.repository"}
 )
 public class MySqlEquipmentTrackingConfiguration {
     private final long connectionTimeout;
@@ -57,7 +59,16 @@ public class MySqlEquipmentTrackingConfiguration {
 
     @Bean(name = "equipmentTrackingEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean(EntityManagerFactoryBuilder builder) {
-        return DataSourceUtils.getEntityManagerFactoryBean(builder, getDataSource(), "com.classroom.equipment.entity");
+        Map<String, String> properties = new HashMap<>();
+        properties.put("hibernate.hbm2ddl.auto", "update");
+        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+//        properties.put("hibernate.show_sql", "true");
+        
+        return builder
+            .dataSource(getDataSource())
+            .packages("com.classroom.equipment.entity")
+            .properties(properties)
+            .build();
     }
 
     @Bean(name = "equipmentTrackingTransactionManager")

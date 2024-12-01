@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Account Creation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap&subset=vietnamese');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #e8e8e8;
+            font-family: 'Roboto', sans-serif;
+            color: #222;
+        }
+
+        p {
+            line-height: 28px;
+        }
+
+        .container {
+            width: 600px;
+            margin: 20px auto auto;
+            background-color: #fff;
+            padding: 20px;
+        }
+
+        header h1 {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        section span {
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Tài Khoản Nhân Viên Mới</h1>
+    </header>
+    <section>
+        <p>Xin chào <span th:text="${fullName}"></span>,</p>
+        <p>Tài khoản của bạn đã được tạo trong hệ thống Classroom Equipment Tracking System. Dưới đây là thông tin đăng nhập của bạn:</p>
+        <p>
+            <strong>Tên đăng nhập:</strong> <span th:text="${username}"></span><br>
+            <strong>Mật khẩu tạm thời:</strong> <span th:text="${password}"></span>
+        </p>
+        <p>Lưu ý: Đây là mật khẩu tạm thời, vui lòng đổi mật khẩu sau khi đăng nhập lần đầu.</p>
+    </section>
+    <footer>
+        <p>Trân trọng,</p>
+        <p>Đội ngũ phát triển Classroom Equipment Tracking System.</p>
+    </footer>
+</div>
+</body>
+</html> 
