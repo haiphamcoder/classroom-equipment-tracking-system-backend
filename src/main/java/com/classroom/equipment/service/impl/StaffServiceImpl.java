@@ -1,5 +1,6 @@
 package com.classroom.equipment.service.impl;
 
+import com.classroom.equipment.common.constant.CommonConstants;
 import com.classroom.equipment.config.ApiException;
 import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;
@@ -72,12 +73,10 @@ public class StaffServiceImpl implements StaffService {
         body.put("password", tempPassword);
         body.put("loginUrl", LOGIN_URL);
 
-        //TODO fix
         emailService.sendEmail(
             request.getEmail(),
             "Classroom Equipment Tracking System - Tài Khoản Mới",
-            body,
-            "email/staff-account-creation"
+            body, CommonConstants.EMAIL_STAFF_ACCOUNT_CREATION_TEMPLATE
         );
 
         return "Staff account created successfully";
