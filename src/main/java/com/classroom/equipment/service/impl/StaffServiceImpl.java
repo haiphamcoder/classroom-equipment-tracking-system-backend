@@ -23,7 +23,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 public class StaffServiceImpl implements StaffService {
-    private final String LOGIN_URL = "35.185.177.130/login";
     private final StaffRepository staffRepository;
     private final StaffLoginRepository staffLoginRepository;
     private final BuildingRepository buildingRepository;
@@ -71,7 +70,6 @@ public class StaffServiceImpl implements StaffService {
         body.put("fullName", request.getFullName());
         body.put("username", request.getUsername());
         body.put("password", tempPassword);
-        body.put("loginUrl", LOGIN_URL);
 
         emailService.sendEmail(
             request.getEmail(),
