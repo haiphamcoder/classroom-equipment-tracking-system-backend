@@ -1,5 +1,6 @@
 package com.classroom.equipment.service;
 
+import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;
 import com.classroom.equipment.dtos.request.LoginRequest;
 import com.classroom.equipment.entity.Staff;
@@ -19,4 +20,6 @@ public interface StaffService {
     List<Staff> findAllStaff();
 
     Staff login(LoginRequest loginRequest);
+
+    String changePassword(ChangePasswordRequest changePasswordRequest);
 }

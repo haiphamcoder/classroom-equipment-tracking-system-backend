@@ -1,5 +1,6 @@
 package com.classroom.equipment.controller;
 
+import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;
 import com.classroom.equipment.dtos.request.LoginRequest;
 import com.classroom.equipment.entity.Staff;
@@ -44,5 +45,10 @@ public class StaffManagementController {
     @PostMapping("delete/{staffId}")
     public ResponseEntity<String> deleteStaffAccount(@PathVariable Long staffId) {
         return ResponseEntity.ok(staffService.deleteStaffAccount(staffId));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.ok(staffService.changePassword(request));
     }
 }

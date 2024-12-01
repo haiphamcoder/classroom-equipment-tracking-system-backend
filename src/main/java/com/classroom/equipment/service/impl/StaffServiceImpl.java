@@ -1,6 +1,7 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;
 import com.classroom.equipment.dtos.request.LoginRequest;
 import com.classroom.equipment.entity.Staff;
@@ -16,10 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,9 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public Staff getStaffById(Long id) {
-        return staffRepository.findById(id).orElse(null);
+        return staffRepository.findById(id).orElseThrow(
+            () -> new ApiException("Staff not found")
+        );
     }
 
     @Override
@@ -91,12 +91,21 @@ public class StaffServiceImpl implements StaffService {
 
     @Override
     public String deleteStaffAccount(Long id) {
-        return "";
+        Staff staff = staffRepository.findById(id).orElseThrow(
+            () -> new ApiException("Staff not found")
+        );
+        staff.setDeleted(true);
+        staffRepository.save(staff);
+
+        return "Staff account deleted successfully";
     }
 
     @Override
     public List<Staff> findAllStaff() {
-        return List.of();
+        List<Staff> staffList = staffRepository.findAll();
+        staffList.sort(Comparator.comparing(Staff::getId));
+
+        return staffList;
     }
 
     @Override
@@ -118,6 +127,29 @@ public class StaffServiceImpl implements StaffService {
         staffLoginRepository.save(staffLogin);
 
         return staffLogin.getStaff();
+    }
+
+    @Override
+    public String changePassword(ChangePasswordRequest request) {
+        StaffLogin staffLogin = staffLoginRepository.findById(request.getStaffId())
+            .orElseThrow(() -> new ApiException("Staff not found"));
+
+        if (!passwordUtils.verifyPassword(
+            request.getOldPassword(),
+            staffLogin.getSalt(),
+            staffLogin.getPasswordHash())) {
+            throw new ApiException("Current password is incorrect");
+        }
+
+        String newSalt = passwordUtils.generateSalt();
+        String newPasswordHash = passwordUtils.hashPassword(request.getNewPassword(), newSalt);
+
+        staffLogin.setSalt(newSalt);
+        staffLogin.setPasswordHash(newPasswordHash);
+
+        staffLoginRepository.save(staffLogin);
+
+        return "Password changed successfully";
     }
 
 }
