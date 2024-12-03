@@ -2,6 +2,7 @@ package com.classroom.equipment.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity(name = "staff_login")
+@SQLRestriction(value = "is_deleted = false")
 public class StaffLogin extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

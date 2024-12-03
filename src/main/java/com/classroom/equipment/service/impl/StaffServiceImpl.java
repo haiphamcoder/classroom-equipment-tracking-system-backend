@@ -14,6 +14,7 @@ import com.classroom.equipment.service.EmailService;
 import com.classroom.equipment.service.StaffService;
 import com.classroom.equipment.utils.PasswordUtils;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,7 @@ public class StaffServiceImpl implements StaffService {
     }
 
     @Override
+    @Transactional
     public String createStaffAccount(CreateStaffRequest request) {
         Optional<Staff> staffOpt = staffRepository.findByName(request.getUsername());
         if (staffOpt.isPresent()) {
@@ -117,7 +119,7 @@ public class StaffServiceImpl implements StaffService {
             throw new ApiException("Invalid username or password");
         }
 
-        if (staffLogin.getLastLogin() == null) {
+        if (staffLogin.getLastLogin() != null) {
             staffLogin.setFirstLogin(false);
         }
         staffLogin.setLastLogin(LocalDateTime.now());
