@@ -117,6 +117,12 @@ public class StaffServiceImpl implements StaffService {
         staff.setDeleted(true);
         staffRepository.save(staff);
 
+        StaffLogin staffLogin = staffLoginRepository.findByStaffId(id).orElseThrow(
+            () -> new ApiException("Staff not found")
+        );
+        staffLogin.setDeleted(true);
+        staffLoginRepository.save(staffLogin);
+
         return "Staff account deleted successfully";
     }
 
