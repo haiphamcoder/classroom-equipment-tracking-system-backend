@@ -1,6 +1,6 @@
 package com.classroom.equipment.service.impl;
 
-import com.classroom.equipment.common.enums.Status;
+import com.classroom.equipment.common.enums.BorrowerStatus;
 import com.classroom.equipment.config.ApiException;
 import com.classroom.equipment.dtos.request.AddBorrowerRequest;
 import com.classroom.equipment.entity.Borrower;
@@ -42,7 +42,7 @@ public class BorrowerServiceImpl implements BorrowerService {
             .email(request.getEmail())
             .telegramId(request.getTelegramId())
             .type(request.getType())
-            .status(Status.ACTIVE)
+            .status(BorrowerStatus.ACTIVE)
             .build();
         borrowerRepository.save(newBorrower);
 
@@ -51,12 +51,12 @@ public class BorrowerServiceImpl implements BorrowerService {
 
     @Override
     @Transactional
-    public String updateBorrowerStatus(Long id, Status status) {
+    public String updateBorrowerStatus(Long id, BorrowerStatus status) {
         Borrower borrower = borrowerRepository.findById(id).orElseThrow(
             () -> new ApiException("Borrower not found")
         );
         borrower.setStatus(status);
-        if (status == Status.DELETED) {
+        if (status == BorrowerStatus.DELETED) {
             borrower.setDeleted(true);
         }
         borrowerRepository.save(borrower);

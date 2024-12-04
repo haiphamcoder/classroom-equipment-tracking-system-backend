@@ -1,6 +1,6 @@
 package com.classroom.equipment.controller;
 
-import com.classroom.equipment.common.enums.Status;
+import com.classroom.equipment.common.enums.BorrowerStatus;
 import com.classroom.equipment.dtos.request.AddBorrowerRequest;
 import com.classroom.equipment.entity.Borrower;
 import com.classroom.equipment.service.BorrowerService;
@@ -27,7 +27,10 @@ public class BorrowerController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<String> updateBorrowerStatus(@RequestParam Long id, @RequestParam Status status) {
+    public ResponseEntity<String> updateBorrowerStatus(
+        @RequestParam Long id,
+        @RequestParam BorrowerStatus status
+    ) {
         return ResponseEntity.ok(borrowerService.updateBorrowerStatus(id, status));
     }
 

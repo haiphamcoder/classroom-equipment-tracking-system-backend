@@ -1,5 +1,6 @@
 package com.classroom.equipment.service.impl;
 
+import com.classroom.equipment.common.enums.Status;
 import com.classroom.equipment.config.ApiException;
 import com.classroom.equipment.dtos.request.AddEquipmentRoomRequest;
 import com.classroom.equipment.entity.Building;
@@ -33,6 +34,7 @@ public class EquipmentRoomServiceImpl implements EquipmentRoomService {
                 .roomName(addEquipmentRoomRequest.getRoomName())
                 .building(building)
                 .manager(staff)
+                .status(Status.AVAILABLE)
                 .build();
         equipmentRoomRepository.save(equipmentRoom);
 

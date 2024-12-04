@@ -6,6 +6,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,10 +25,6 @@ public class BorrowOrder extends BaseModel {
     private Borrower borrower;
 
     @ManyToOne
-    @JoinColumn(name = "equipment_id", referencedColumnName = "id")
-    private Equipment equipment;
-
-    @ManyToOne
     @JoinColumn(name = "staff_id", referencedColumnName = "id")
     private Staff staff;
 
@@ -39,4 +36,7 @@ public class BorrowOrder extends BaseModel {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems;
 }
