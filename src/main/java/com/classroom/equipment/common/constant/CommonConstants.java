@@ -8,6 +8,8 @@ public class CommonConstants {
 
     public static final String EMAIL_STAFF_ACCOUNT_CREATION_TEMPLATE = "staff-account-creation";
 
+    public static final String EMAIL_OTP_NOTIFICATION_TEMPLATE = "otp-notification";
+
     public static final int OTP_EXPIRATION_TIME = 2; // minutes
 
     // Other constants

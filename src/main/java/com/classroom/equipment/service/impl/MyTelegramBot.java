@@ -22,6 +22,8 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -122,7 +124,12 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
             String emailPrefix = email.substring(0, email.indexOf('@'));
             String emailPrefixMasked = emailPrefix.substring(0, emailPrefix.length() / 2) + "*".repeat(emailPrefix.length() - emailPrefix.length() / 2);
             String maskedEmail = emailPrefixMasked + email.substring(email.indexOf('@'));
-            emailService.sendEmail(email, "Telegram Verification", "Your OTP is: " + otp);
+
+            Map<String, Object> model = new HashMap<>();
+            model.put("otp", otp);
+            model.put("name", user.getName());
+            model.put("expiryTime", CommonConstants.OTP_EXPIRATION_TIME);
+            emailService.sendEmail(email, "Telegram Verification", model, CommonConstants.EMAIL_OTP_NOTIFICATION_TEMPLATE);
             sendMessage(chatId, "Hello, " + user.getName() + "!\nPlease check your email for the OTP.\n" +
                     "An OTP has been sent to your email: " + maskedEmail + ". Please enter it within 2 minutes.");
         }
