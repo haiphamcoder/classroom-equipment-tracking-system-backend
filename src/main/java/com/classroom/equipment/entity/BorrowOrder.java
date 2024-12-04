@@ -1,7 +1,9 @@
 package com.classroom.equipment.entity;
 
+import com.classroom.equipment.common.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity(name = "borrow_order")
+@SQLRestriction(value = "is_deleted = false")
 public class BorrowOrder extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,5 +37,6 @@ public class BorrowOrder extends BaseModel {
     private LocalDateTime returnDeadline;
 
     @Column(nullable = false)
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 }
