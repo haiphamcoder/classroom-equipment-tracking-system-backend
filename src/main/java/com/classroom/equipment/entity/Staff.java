@@ -29,4 +29,7 @@ public class Staff extends BaseModel {
     private String phone;
 
     private boolean admin = false;
+
+    @Column(nullable = false)
+    private boolean firstLogin = true;
 }

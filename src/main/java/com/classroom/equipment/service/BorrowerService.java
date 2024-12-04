@@ -1,6 +1,6 @@
 package com.classroom.equipment.service;
 
-import com.classroom.equipment.common.enums.Status;
+import com.classroom.equipment.common.enums.BorrowerStatus;
 import com.classroom.equipment.dtos.request.AddBorrowerRequest;
 import com.classroom.equipment.entity.Borrower;
 
@@ -11,5 +11,5 @@ public interface BorrowerService {
 
     String addBorrower(AddBorrowerRequest request);
 
-    String updateBorrowerStatus(Long id, Status status);
+    String updateBorrowerStatus(Long id, BorrowerStatus status);
 }
