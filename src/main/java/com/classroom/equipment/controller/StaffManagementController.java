@@ -3,6 +3,7 @@ package com.classroom.equipment.controller;
 import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;
 import com.classroom.equipment.dtos.request.LoginRequest;
+import com.classroom.equipment.dtos.request.UpdateStaffRequest;
 import com.classroom.equipment.entity.Staff;
 import com.classroom.equipment.service.StaffService;
 import lombok.RequiredArgsConstructor;
@@ -37,9 +38,9 @@ public class StaffManagementController {
         return ResponseEntity.ok(staffService.createStaffAccount(request));
     }
 
-    @PostMapping("update/{staffId}")
-    public ResponseEntity<String> updateStaffAccount(@PathVariable Long staffId, @RequestBody Staff staff) {
-        return ResponseEntity.ok(staffService.updateStaffAccount(staffId, staff));
+    @PostMapping("/update")
+    public ResponseEntity<String> updateStaffAccount(@RequestBody(required = false) UpdateStaffRequest request) {
+        return ResponseEntity.ok(staffService.updateStaffAccount(request));
     }
 
     @PostMapping("delete/{staffId}")

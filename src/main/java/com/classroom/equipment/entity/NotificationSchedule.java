@@ -1,7 +1,9 @@
 package com.classroom.equipment.entity;
 
+import com.classroom.equipment.common.enums.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Entity(name = "notification_schedule")
+@SQLRestriction(value = "is_deleted = false")
 public class NotificationSchedule extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +30,8 @@ public class NotificationSchedule extends BaseModel {
     private String notificationContent;
 
     @Column(nullable = false)
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private NotificationStatus status;
 
     @Column(nullable = false)
     private LocalDateTime createdTime;

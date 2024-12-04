@@ -1,7 +1,9 @@
 package com.classroom.equipment.entity;
 
+import com.classroom.equipment.common.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
@@ -9,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Entity(name = "equipment_room")
+@SQLRestriction(value = "is_deleted = false")
 public class EquipmentRoom extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +29,6 @@ public class EquipmentRoom extends BaseModel {
     private Staff manager;
 
     @Column(nullable = false)
-    private int status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 }

@@ -47,8 +47,8 @@ spec:
               value: "${EQUIPMENT_DATASOURCE_PASSWORD}"
           resources:
             requests:
-              memory: "512Mi"
-              cpu: "256m"
+              memory: "1000Mi"
+              cpu: "512m"
             limits:
               memory: "1024Mi"
               cpu: "1000m"
