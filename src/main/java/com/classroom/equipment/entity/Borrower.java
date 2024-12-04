@@ -10,6 +10,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity(name = "borrower")
 @SQLRestriction(value = "is_deleted = false")
 public class Borrower extends BaseModel {
@@ -32,5 +33,7 @@ public class Borrower extends BaseModel {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    private String note;
 
 }
