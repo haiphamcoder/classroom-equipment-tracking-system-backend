@@ -1,17 +1,17 @@
 package com.classroom.equipment.service;
 
+import com.classroom.equipment.dtos.request.UpdateBuildingRequest;
 import com.classroom.equipment.entity.Building;
 
 public interface BuildingService {
-    void addBuilding(String buildingName);
+    String addBuilding(String buildingName);
 
     Building getBuildingById(Long id);
 
     Building getBuildingByName(String buildingName);
 
-    void updateBuilding(Building building);
+    String updateBuilding(UpdateBuildingRequest request);
 
-    void deleteBuilding(Long id);
+    String deleteBuilding(Long id);
 
-    void updateBuildingStatus(Long buildingId, boolean status);
 }
