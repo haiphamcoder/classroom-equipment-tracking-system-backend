@@ -4,5 +4,7 @@ public enum EquipmentStatus {
     AVAILABLE,
     UNAVAILABLE,
     BORROWED,
-    DAMAGED
+    DAMAGED,
+    NORMAL,
+    LOST
 }

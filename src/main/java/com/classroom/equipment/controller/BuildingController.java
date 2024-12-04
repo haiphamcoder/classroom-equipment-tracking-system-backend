@@ -29,7 +29,7 @@ public class BuildingController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<String> updateBuilding(@RequestBody UpdateBuildingRequest request) {
+    public ResponseEntity<String> updateBuilding(@RequestBody(required = false) UpdateBuildingRequest request) {
         return ResponseEntity.ok(buildingService.updateBuilding(request));
     }
 

@@ -5,6 +5,8 @@ import com.classroom.equipment.config.ApiException;
 import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;
 import com.classroom.equipment.dtos.request.LoginRequest;
+import com.classroom.equipment.dtos.request.UpdateStaffRequest;
+import com.classroom.equipment.entity.Building;
 import com.classroom.equipment.entity.Staff;
 import com.classroom.equipment.entity.StaffLogin;
 import com.classroom.equipment.repository.BuildingRepository;
@@ -17,6 +19,7 @@ import com.classroom.equipment.utils.PasswordUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -84,8 +87,26 @@ public class StaffServiceImpl implements StaffService {
 
 
     @Override
-    public String updateStaffAccount(Long staffId, Staff staff) {
-        return "";
+    @Transactional
+    public String updateStaffAccount(UpdateStaffRequest request) {
+        Staff staff = staffRepository.findById(request.getId())
+            .orElseThrow(() -> new ApiException("Staff not found"));
+
+        if (StringUtils.hasText(request.getBuildingName())) {
+            Building building = buildingRepository.findByBuildingName(request.getBuildingName())
+                .orElseThrow(() -> new ApiException("Building not found"));
+            staff.setBuildingId(building);
+        }
+        if (StringUtils.hasText(request.getName())) {
+            staff.setName(request.getName());
+        }
+        if (StringUtils.hasText(request.getPhone())) {
+            staff.setPhone(request.getPhone());
+        }
+
+        staffRepository.save(staff);
+        
+        return "Staff account updated successfully";
     }
 
     @Override

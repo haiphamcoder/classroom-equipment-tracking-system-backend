@@ -36,7 +36,7 @@ public class EquipmentManagementController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<String> updateEquipment(@RequestBody UpdateEquipmentRequest request) {
+    public ResponseEntity<String> updateEquipment(@RequestBody(required = false) UpdateEquipmentRequest request) {
         return ResponseEntity.ok(equipmentService.updateEquipment(request));
     }
 
@@ -46,7 +46,7 @@ public class EquipmentManagementController {
     }
 
     @PostMapping("/room/add")
-    public ResponseEntity<String> addEquipmentRoom(@RequestBody AddEquipmentRoomRequest request) {
+    public ResponseEntity<String> addEquipmentRoom(@RequestBody(required = false) AddEquipmentRoomRequest request) {
         return ResponseEntity.ok(equipmentRoomService.addEquipmentRoom(request));
     }
 }
