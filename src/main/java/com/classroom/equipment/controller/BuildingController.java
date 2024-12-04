@@ -18,12 +18,12 @@ public class BuildingController {
         return ResponseEntity.ok(buildingService.addBuilding(buildingName));
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<Building> getBuildingById(@PathVariable Long id) {
         return ResponseEntity.ok(buildingService.getBuildingById(id));
     }
 
-    @GetMapping("/get/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<Building> getBuildingByName(@PathVariable String name) {
         return ResponseEntity.ok(buildingService.getBuildingByName(name));
     }
