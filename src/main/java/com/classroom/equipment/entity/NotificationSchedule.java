@@ -35,4 +35,7 @@ public class NotificationSchedule extends BaseModel {
 
     @Column(nullable = false)
     private LocalDateTime createdTime;
+
+    @Column(name = "executed_time", nullable = false)
+    private LocalDateTime executedTime;
 }

@@ -155,8 +155,13 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
         return String.valueOf(otp);
     }
 
-    private void sendMessage(String chatId, String text) {
-        SendMessage message = new SendMessage(chatId, text);
+    public void sendMessage(String chatId, String text) {
+        sendMessage(chatId, text, null);
+    }
+
+    public void sendMessage(String chatId, String content, String parseMode){
+        SendMessage message = new SendMessage(chatId, content);
+        message.setParseMode(parseMode);
         try {
             telegramClient.execute(message);
         } catch (TelegramApiException e) {
