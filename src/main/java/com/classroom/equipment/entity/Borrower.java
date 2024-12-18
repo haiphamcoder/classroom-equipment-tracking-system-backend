@@ -25,7 +25,7 @@ public class Borrower extends BaseModel {
     @Enumerated(EnumType.STRING)
     private BorrowerType type;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     private String telegramId;

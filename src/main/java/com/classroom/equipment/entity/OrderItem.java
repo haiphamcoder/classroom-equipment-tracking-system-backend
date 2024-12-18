@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "order_time")
+@Entity(name = "order_item")
 @SQLRestriction(value = "is_deleted = false")
 public class OrderItem extends BaseModel {
     @Id
