@@ -57,9 +57,10 @@ public class StaffServiceImpl implements StaffService {
             .phone(request.getPhone())
             .buildingId(buildingRepository.findByBuildingName(request.getBuildingName())
                 .orElseThrow(() -> new ApiException("Building not found")))
+            .firstLogin(true)
             .build();
 
-        staff = staffRepository.save(staff);
+        staffRepository.save(staff);
 
         StaffLogin staffLogin = StaffLogin.builder()
             .staff(staff)
@@ -146,13 +147,18 @@ public class StaffServiceImpl implements StaffService {
             throw new ApiException("Invalid username or password");
         }
 
+        Staff staff = staffLogin.getStaff();
+        
         if (staffLogin.getLastLogin() != null) {
             staffLogin.setFirstLogin(false);
+            staff.setFirstLogin(false);
+            staffRepository.save(staff);
         }
+        
         staffLogin.setLastLogin(LocalDateTime.now());
         staffLoginRepository.save(staffLogin);
 
-        return staffLogin.getStaff();
+        return staff;
     }
 
     @Override

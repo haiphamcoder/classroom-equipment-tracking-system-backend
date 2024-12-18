@@ -4,7 +4,7 @@ import com.classroom.equipment.common.enums.OrderSortBy;
 import com.classroom.equipment.dtos.request.CreateBorrowOrderRequest;
 import com.classroom.equipment.dtos.request.ExtendDeadlineRequest;
 import com.classroom.equipment.dtos.request.CreateReturnRequest;
-import com.classroom.equipment.entity.BorrowOrder;
+import com.classroom.equipment.dtos.response.BorrowOrderResponse;
 import com.classroom.equipment.service.BorrowOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class BorrowOrderController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<BorrowOrder> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<BorrowOrderResponse> getOrderById(@PathVariable Long id) {
         return ResponseEntity.ok(borrowOrderService.getOrderById(id));
     }
 
@@ -39,14 +39,14 @@ public class BorrowOrderController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<BorrowOrder>> getOrders(
+    public ResponseEntity<List<BorrowOrderResponse>> getOrders(
         @RequestParam(required = false) String sort,
         @RequestParam(required = false) OrderSortBy sortBy) {
         return ResponseEntity.ok(borrowOrderService.getOrders(sort, sortBy));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<BorrowOrder>> searchOrders(
+    public ResponseEntity<List<BorrowOrderResponse>> searchOrders(
             @RequestParam(required = false) String borrowerName) {
         return ResponseEntity.ok(borrowOrderService.searchOrders(borrowerName));
     }

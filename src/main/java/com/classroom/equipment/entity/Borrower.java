@@ -1,7 +1,7 @@
 package com.classroom.equipment.entity;
 
+import com.classroom.equipment.common.enums.BorrowerStatus;
 import com.classroom.equipment.common.enums.BorrowerType;
-import com.classroom.equipment.common.enums.Status;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -25,14 +25,14 @@ public class Borrower extends BaseModel {
     @Enumerated(EnumType.STRING)
     private BorrowerType type;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     private String telegramId;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private BorrowerStatus status;
 
     private String note;
 

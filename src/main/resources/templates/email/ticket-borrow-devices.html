@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông Báo Ticket Mượn Thiết Bị</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap&subset=vietnamese');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Roboto', sans-serif;
+            color: #222;
+        }
+
+        p {
+            line-height: 28px;
+        }
+
+        .container {
+            width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            text-align: center;
+            margin-bottom: 16px;
+            color: #2196F3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .highlight {
+            color: #FF5722;
+            font-weight: bold;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Thông Báo Ticket Mượn Thiết Bị</h1>
+    </header>
+    <section>
+        <p>Xin chào <span th:text="${borrowerName}"></span>,</p>
+        <p>Chúng tôi xin thông báo rằng ticket mượn thiết bị của bạn đã được tạo thành công. Dưới đây là thông tin chi tiết:</p>
+        <p><strong>Mã Ticket:</strong> <span class="highlight" th:text="${ticketCode}"></span></p>
+        <p><strong>Thời gian mượn:</strong> <span th:text="${borrowDate}"></span></p>
+        <p><strong>Thời gian trả dự kiến:</strong> <span th:text="${expectedReturnDate}"></span></p>
+        <p><strong>Danh sách thiết bị:</strong></p>
+        <table>
+            <thead>
+            <tr>
+                <th>STT</th>
+                <th>Tên thiết bị</th>
+                <th>Mã thiết bị</th>
+                <th>Số lượng</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="device, stat : ${devices}">
+                <td th:text="${stat.index + 1}"></td>
+                <td th:text="${device.name}"></td>
+                <td th:text="${device.code}"></td>
+                <td th:text="${device.quantity}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+    <footer>
+        <p>Trân trọng,</p>
+        <p>Đội ngũ phát triển Classroom Equipment Tracking System.</p>
+    </footer>
+</div>
+</body>
+</html>
