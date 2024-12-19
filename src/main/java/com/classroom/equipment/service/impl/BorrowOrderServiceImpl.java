@@ -137,14 +137,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         Sort.Direction direction = sort.equalsIgnoreCase("DESC") ? 
             Sort.Direction.DESC : Sort.Direction.ASC;
 
-        if (sortBy == null) {
-            return borrowOrderRepository.findAll(Sort.by(direction, "id"))
-                .stream()
-                .map(this::toBorrowOrderResponse)
-                .collect(Collectors.toList());
-        }
-
-        String sortField = switch (sortBy) {
+        String sortField = sortBy == null ? "id" : switch (sortBy) {
             case BORROWER -> "borrower.name";
             case EQUIPMENT -> "equipment.name";
             case STATUS -> "status";
@@ -230,8 +223,8 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
             Equipment equipment = item.getEquipment();
             OrderItemResponse response = OrderItemResponse.builder()
                 .id(item.getId())
-                .equipmentName(equipment.getName())
-                .equipmentRoomName(equipment.getRoom().getRoomName())
+                .equipmentName(equipment != null ? equipment.getName() : null)
+                .equipmentRoomName(equipment != null ?equipment.getRoom().getRoomName() : null)
                 .quantity(item.getQuantity())
                 .status(item.getStatus())
                 .notes(item.getNotes())

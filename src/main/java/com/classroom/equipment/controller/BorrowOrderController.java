@@ -40,8 +40,8 @@ public class BorrowOrderController {
 
     @GetMapping("/list")
     public ResponseEntity<List<BorrowOrderResponse>> getOrders(
-        @RequestParam(required = false) String sort,
-        @RequestParam(required = false) OrderSortBy sortBy) {
+        @RequestParam(required = false, defaultValue = "ASC") String sort,
+        @RequestParam(required = false, defaultValue = "BORROW_TIME") OrderSortBy sortBy) {
         return ResponseEntity.ok(borrowOrderService.getOrders(sort, sortBy));
     }
 
