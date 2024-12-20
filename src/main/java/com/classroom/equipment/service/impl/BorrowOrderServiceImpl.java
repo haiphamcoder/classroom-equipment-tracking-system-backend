@@ -2,6 +2,7 @@ package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.*;
 import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.dtos.export.BorrowOrderExportDTO;
 import com.classroom.equipment.dtos.request.*;
 import com.classroom.equipment.dtos.response.BorrowOrderResponse;
 import com.classroom.equipment.dtos.response.OrderItemResponse;
@@ -18,12 +19,15 @@ import com.classroom.equipment.repository.EquipmentRepository;
 import com.classroom.equipment.repository.StaffRepository;
 import com.classroom.equipment.repository.ReturnRecordRepository;
 import com.classroom.equipment.service.BorrowOrderService;
+import com.classroom.equipment.service.ExportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.core.io.Resource;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +41,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
     private final EquipmentRepository equipmentRepository;
     private final StaffRepository staffRepository;
     private final ReturnRecordRepository returnRecordRepository;
+    private final ExportService exportService;
 
     @Override
     @Transactional
@@ -289,6 +294,25 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         
         borrowOrderRepository.saveAll(orders);
         return "Cancelled " + orders.size() + " orders successfully";
+    }
+
+    @Override
+    public ResponseEntity<Resource> exportOrders(String format, OrderSearchRequest searchRequest) {
+        List<BorrowOrderResponse> orders;
+        if (searchRequest != null) {
+            orders = searchOrders(searchRequest);
+        } else {
+            orders = getOrders("ASC", OrderSortBy.BORROW_TIME);
+        }
+        
+        List<BorrowOrderExportDTO> exportData = orders.stream()
+            .map(BorrowOrderExportDTO::from)
+            .collect(Collectors.toList());
+        
+        String filename = String.format("Borrow_Orders_Report_%s", 
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss")));
+            
+        return exportService.exportToFile(exportData, filename, format);
     }
 
     private List<OrderItemResponse> toOrderItemResponse(List<OrderItem> orderItems) {
