@@ -8,6 +8,7 @@ import com.classroom.equipment.dtos.request.OrderSearchRequest;
 import com.classroom.equipment.dtos.response.BorrowOrderResponse;
 import com.classroom.equipment.service.BorrowOrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,5 +56,12 @@ public class BorrowOrderController {
     @PostMapping("/return")
     public ResponseEntity<String> returnOrder(@RequestBody CreateReturnRequest request) {
         return ResponseEntity.ok(borrowOrderService.processReturn(request));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportOrders(
+            @RequestParam(defaultValue = "excel") String format,
+            @RequestParam(required = false) OrderSearchRequest searchRequest) {
+        return borrowOrderService.exportOrders(format, searchRequest);
     }
 }

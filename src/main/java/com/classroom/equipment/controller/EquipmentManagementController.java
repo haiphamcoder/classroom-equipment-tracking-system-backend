@@ -8,6 +8,7 @@ import com.classroom.equipment.entity.Equipment;
 import com.classroom.equipment.service.EquipmentRoomService;
 import com.classroom.equipment.service.EquipmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,5 +49,11 @@ public class EquipmentManagementController {
     @PostMapping("/room/add")
     public ResponseEntity<String> addEquipmentRoom(@RequestBody(required = false) AddEquipmentRoomRequest request) {
         return ResponseEntity.ok(equipmentRoomService.addEquipmentRoom(request));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportEquipments(
+            @RequestParam(defaultValue = "excel") String format) {
+        return equipmentService.exportEquipments(format);
     }
 }

@@ -7,6 +7,7 @@ import com.classroom.equipment.dtos.request.UpdateStaffRequest;
 import com.classroom.equipment.entity.Staff;
 import com.classroom.equipment.service.StaffService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,5 +52,11 @@ public class StaffManagementController {
     @PostMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
         return ResponseEntity.ok(staffService.changePassword(request));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportStaffs(
+        @RequestParam(defaultValue = "excel") String format) {
+        return staffService.exportStaffs(format);
     }
 }

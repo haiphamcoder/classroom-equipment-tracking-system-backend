@@ -8,6 +8,9 @@ import com.classroom.equipment.entity.Staff;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+
 public interface StaffService {
 
     Staff getStaffById(Long id);
@@ -23,4 +26,6 @@ public interface StaffService {
     Staff login(LoginRequest loginRequest);
 
     String changePassword(ChangePasswordRequest changePasswordRequest);
+
+    ResponseEntity<Resource> exportStaffs(String format);
 }
