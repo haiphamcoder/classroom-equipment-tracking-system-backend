@@ -70,12 +70,28 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public String deleteEquipment(Long id) {
-        Equipment equipment = getEquipmentById(id);
-        equipment.setDeleted(true);
-        equipmentRepository.save(equipment);
+    @Transactional
+    public String deleteEquipments(List<Long> ids) {
+        List<Equipment> equipments = equipmentRepository.findAllById(ids);
+        
+        if (equipments.isEmpty()) {
+            throw new ApiException("No equipment found with provided ids");
+        }
 
-        return "Delete equipment successfully";
+        boolean hasBorrowedEquipment = equipments.stream()
+            .anyMatch(equipment -> equipment.getStatus() == EquipmentStatus.BORROWED);
+        
+        if (hasBorrowedEquipment) {
+            throw new ApiException("Cannot delete equipment that is currently borrowed");
+        }
+
+        equipments.forEach(equipment -> {
+            equipment.setDeleted(true);
+            equipment.setStatus(EquipmentStatus.UNAVAILABLE);
+        });
+        
+        equipmentRepository.saveAll(equipments);
+        return "Deleted " + equipments.size() + " equipment successfully";
     }
 
 }

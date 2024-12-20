@@ -40,9 +40,9 @@ public class EquipmentManagementController {
         return ResponseEntity.ok(equipmentService.updateEquipment(request));
     }
 
-    @PostMapping("/delete/{id}")
-    public ResponseEntity<String> deleteEquipment(@PathVariable Long id) {
-        return ResponseEntity.ok(equipmentService.deleteEquipment(id));
+    @PostMapping("/delete")
+    public ResponseEntity<String> deleteEquipments(@RequestBody List<Long> ids) {
+        return ResponseEntity.ok(equipmentService.deleteEquipments(ids));
     }
 
     @PostMapping("/room/add")

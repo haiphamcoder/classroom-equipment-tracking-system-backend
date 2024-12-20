@@ -15,6 +15,6 @@ public interface EquipmentService {
 
     String updateEquipment(UpdateEquipmentRequest request);
 
-    String deleteEquipment(Long id);
+    String deleteEquipments(List<Long> ids);
 
 }
