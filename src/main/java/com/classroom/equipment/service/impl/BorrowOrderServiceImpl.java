@@ -2,9 +2,7 @@ package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.*;
 import com.classroom.equipment.config.ApiException;
-import com.classroom.equipment.dtos.request.CreateBorrowOrderRequest;
-import com.classroom.equipment.dtos.request.ExtendDeadlineRequest;
-import com.classroom.equipment.dtos.request.CreateReturnRequest;
+import com.classroom.equipment.dtos.request.*;
 import com.classroom.equipment.dtos.response.BorrowOrderResponse;
 import com.classroom.equipment.dtos.response.OrderItemResponse;
 
@@ -136,16 +134,28 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
     }
 
     @Override
-    public List<BorrowOrderResponse> searchOrders(String borrowerName) {
-        if (borrowerName.isEmpty()) {
-            return borrowOrderRepository.findAll()
-                .stream()
-                .map(this::toBorrowOrderResponse)
-                .collect(Collectors.toList());
-        }
-        return borrowOrderRepository.findByBorrowerNameContainingIgnoreCase(borrowerName)
-            .stream()
-            .map(this::toBorrowOrderResponse)
+    public List<BorrowOrderResponse> searchOrders(OrderSearchRequest request) {
+        Sort.Direction direction = request.getSortDirection().equalsIgnoreCase("DESC") ? 
+            Sort.Direction.DESC : Sort.Direction.ASC;
+
+        String sortField = request.getSortBy() == null ? "id" : switch (request.getSortBy()) {
+            case BORROWER -> "borrower.name";
+            case EQUIPMENT -> "orderItems.equipment.name";
+            case STATUS -> "status";
+            case BORROW_TIME -> "borrowTime";
+            case RETURN_DEADLINE -> "returnDeadline";
+        };
+
+        List<BorrowOrder> orders = borrowOrderRepository.searchOrders(
+            request.getBorrowerName(),
+            request.getStatus(),
+            request.getStartDate(),
+            request.getEndDate(),
+            Sort.by(direction, sortField)
+        );
+        
+        return orders.stream()
+            .map(this::mapToResponse)
             .collect(Collectors.toList());
     }
 
