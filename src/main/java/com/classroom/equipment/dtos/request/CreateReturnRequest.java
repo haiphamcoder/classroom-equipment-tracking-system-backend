@@ -1,10 +1,9 @@
 package com.classroom.equipment.dtos.request;
 
 import com.classroom.equipment.common.enums.EquipmentStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,5 +12,13 @@ import lombok.Setter;
 public class CreateReturnRequest {
     private Long orderId;
     private Long staffId;
-    private EquipmentStatus equipmentStatus;
+    private List<ReturnItemRequest> items;
+
+    @Data
+    public static class ReturnItemRequest {
+        private Long orderItemId;
+        private Integer returnQuantity;
+        private EquipmentStatus status;
+        private String notes;
+    }
 }
