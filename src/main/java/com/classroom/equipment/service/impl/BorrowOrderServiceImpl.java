@@ -22,12 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +47,25 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         Staff staff = staffRepository.findById(request.getStaffId())
             .orElseThrow(() -> new ApiException("Staff not found"));
 
+        if (borrower.getStatus() != BorrowerStatus.ACTIVE) {
+            throw new ApiException("Borrower account is not active");
+        }
+
+        for (OrderItemRequest itemRequest : request.getItems()) {
+            Equipment equipment = equipmentRepository.findById(itemRequest.getEquipmentId())
+                .orElseThrow(() -> new ApiException("Equipment not found"));
+                
+            if (equipment.getQuantity() < itemRequest.getQuantity()) {
+                throw new ApiException("Insufficient quantity for equipment: " + equipment.getName());
+            }
+            
+            equipment.setQuantity(equipment.getQuantity() - itemRequest.getQuantity());
+            if (equipment.getQuantity() == 0) {
+                equipment.setStatus(EquipmentStatus.UNAVAILABLE);
+            }
+            equipmentRepository.save(equipment);
+        }
+
         BorrowOrder order = BorrowOrder.builder()
             .borrower(borrower)
             .staff(staff)
@@ -55,21 +74,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
             .status(OrderStatus.BORROWED)
             .build();
 
-        List<OrderItem> orderItems = request.getItems()
-            .stream()
-            .map(itemRequest -> {
-                Equipment equipment = equipmentRepository.findById(itemRequest.getEquipmentId())
-                .orElseThrow(() -> new ApiException("Equipment not found"));
-
-            return OrderItem.builder()
-                .order(order)
-                .equipment(equipment)
-                .quantity(itemRequest.getQuantity())
-                .status(EquipmentStatus.BORROWED)
-                .notes(itemRequest.getNotes())
-                .build();
-        }).collect(Collectors.toList());
-
+        List<OrderItem> orderItems = createOrderItems(request.getItems(), order);
         order.setOrderItems(orderItems);
         borrowOrderRepository.save(order);
 
@@ -172,34 +177,72 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         Staff staff = staffRepository.findById(request.getStaffId())
             .orElseThrow(() -> new ApiException("Staff not found"));
 
-        ReturnStatus returnStatus = switch (request.getEquipmentStatus()) {
-            case DAMAGED -> ReturnStatus.REJECTED;
-            case NORMAL -> ReturnStatus.COMPLETED;
-            case LOST -> ReturnStatus.PENDING;
-            default -> throw new ApiException("Invalid equipment status for return");
-        };
+        Map<Long, OrderItem> orderItemMap = order.getOrderItems().stream()
+            .collect(Collectors.toMap(OrderItem::getId, item -> item));
+
+        boolean hasProblematicReturn = false;
+        boolean allItemsReturned = true;
+
+        for (CreateReturnRequest.ReturnItemRequest returnItem : request.getItems()) {
+            OrderItem orderItem = orderItemMap.get(returnItem.getOrderItemId());
+            if (orderItem == null) {
+                throw new ApiException("Order item not found: " + returnItem.getOrderItemId());
+            }
+
+            if (returnItem.getReturnQuantity() > orderItem.getQuantity()) {
+                throw new ApiException("Return quantity exceeds borrowed quantity for item: " + orderItem.getEquipment().getName());
+            }
+
+            Equipment equipment = orderItem.getEquipment();
+            
+            if (returnItem.getStatus() == EquipmentStatus.NORMAL) {
+                equipment.setQuantity(equipment.getQuantity() + returnItem.getReturnQuantity());
+                if (equipment.getQuantity() > 0) {
+                    equipment.setStatus(EquipmentStatus.AVAILABLE);
+                }
+            } else {
+                hasProblematicReturn = true;
+            }
+            equipmentRepository.save(equipment);
+
+            orderItem.setReturnTime(LocalDateTime.now());
+            orderItem.setStatus(returnItem.getStatus());
+            orderItem.setNotes(returnItem.getNotes());
+            
+            if (returnItem.getReturnQuantity() < orderItem.getQuantity()) {
+                allItemsReturned = false;
+            }
+        }
 
         Borrower borrower = order.getBorrower();
-        if (request.getEquipmentStatus() == EquipmentStatus.DAMAGED) {
-            borrower.setStatus(BorrowerStatus.SUSPENDED);
-            borrower.setNote("Suspended due to damaged equipment return");
-        } else if (request.getEquipmentStatus() == EquipmentStatus.LOST) {
-            borrower.setStatus(BorrowerStatus.LOCKED);
-            borrower.setNote("Locked due to lost equipment");
+        if (hasProblematicReturn) {
+            boolean hasLostItems = request.getItems().stream()
+                .anyMatch(item -> item.getStatus() == EquipmentStatus.LOST);
+            
+            if (hasLostItems) {
+                borrower.setStatus(BorrowerStatus.LOCKED);
+                borrower.setNote("Locked due to lost equipment");
+            } else {
+                borrower.setStatus(BorrowerStatus.SUSPENDED);
+                borrower.setNote("Suspended due to damaged equipment return");
+            }
+            borrowerRepository.save(borrower);
         }
-        borrowerRepository.save(borrower);
+
+        ReturnStatus returnStatus = hasProblematicReturn ?
+            (borrower.getStatus() == BorrowerStatus.LOCKED ? ReturnStatus.PENDING : ReturnStatus.REJECTED) :
+            ReturnStatus.COMPLETED;
 
         ReturnRecord returnRecord = ReturnRecord.builder()
             .order(order)
             .staff(staff)
             .returnTime(LocalDateTime.now())
-            .equipmentStatus(request.getEquipmentStatus())
+            .equipmentStatus(hasProblematicReturn ? EquipmentStatus.DAMAGED : EquipmentStatus.NORMAL)
             .status(returnStatus)
             .build();
-
         returnRecordRepository.save(returnRecord);
 
-        if (returnStatus == ReturnStatus.COMPLETED) {
+        if (allItemsReturned) {
             order.setStatus(OrderStatus.RETURNED);
             borrowOrderRepository.save(order);
         }
@@ -275,5 +318,34 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
             .status(order.getStatus())
             .items(toOrderItemResponse(order.getOrderItems()))
             .build();
+    }
+
+    private BorrowOrderResponse mapToResponse(BorrowOrder order) {
+        return BorrowOrderResponse.builder()
+            .id(order.getId())
+            .borrowerName(order.getBorrower().getName())
+            .staffName(order.getStaff().getName())
+            .borrowTime(order.getBorrowTime())
+            .returnDeadline(order.getReturnDeadline())
+            .status(order.getStatus())
+            .items(toOrderItemResponse(order.getOrderItems()))
+            .build();
+    }
+
+    private List<OrderItem> createOrderItems(List<OrderItemRequest> itemRequests, BorrowOrder order) {
+        return itemRequests.stream()
+            .map(itemRequest -> {
+                Equipment equipment = equipmentRepository.findById(itemRequest.getEquipmentId())
+                    .orElseThrow(() -> new ApiException("Equipment not found"));
+
+                return OrderItem.builder()
+                    .order(order)
+                    .equipment(equipment)
+                    .quantity(itemRequest.getQuantity())
+                    .status(EquipmentStatus.BORROWED)
+                    .notes(itemRequest.getNotes())
+                    .build();
+            })
+            .collect(Collectors.toList());
     }
 } 
