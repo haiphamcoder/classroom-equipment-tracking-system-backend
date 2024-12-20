@@ -117,22 +117,6 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
     }
 
     @Override
-    @Transactional
-    public String cancelOrder(Long orderId) {
-        BorrowOrder order = borrowOrderRepository.findById(orderId)
-            .orElseThrow(() -> new ApiException("Order not found"));
-
-        if (order.getStatus() != OrderStatus.BORROWED) {
-            throw new ApiException("Can only cancel un-return orders");
-        }
-
-        order.setStatus(OrderStatus.CANCELLED);
-        borrowOrderRepository.save(order);
-
-        return "Order cancelled successfully";
-    }
-
-    @Override
     public List<BorrowOrderResponse> getOrders(String sort, OrderSortBy sortBy) {
         Sort.Direction direction = sort.equalsIgnoreCase("DESC") ? 
             Sort.Direction.DESC : Sort.Direction.ASC;
@@ -217,6 +201,43 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         };
     }
 
+    @Override
+    @Transactional
+    public String cancelOrders(List<Long> orderIds) {
+        List<BorrowOrder> orders = borrowOrderRepository.findAllById(orderIds);
+        
+        if (orders.isEmpty()) {
+            throw new ApiException("No orders found with provided ids");
+        }
+
+        List<BorrowOrder> invalidOrders = orders.stream()
+            .filter(order -> order.getStatus() != OrderStatus.BORROWED)
+            .toList();
+        
+        if (!invalidOrders.isEmpty()) {
+            throw new ApiException("Cannot cancel orders that are already returned or cancelled: " + 
+                invalidOrders.stream()
+                    .map(order -> "Order #" + order.getId())
+                    .collect(Collectors.joining(", ")));
+        }
+
+        orders.forEach(order -> {
+            order.getOrderItems().forEach(item -> {
+                Equipment equipment = item.getEquipment();
+                equipment.setQuantity(equipment.getQuantity() + item.getQuantity());
+                if (equipment.getQuantity() > 0) {
+                    equipment.setStatus(EquipmentStatus.AVAILABLE);
+                }
+                equipmentRepository.save(equipment);
+            });
+            
+            order.setStatus(OrderStatus.CANCELLED);
+        });
+        
+        borrowOrderRepository.saveAll(orders);
+        return "Cancelled " + orders.size() + " orders successfully";
+    }
+
     private List<OrderItemResponse> toOrderItemResponse(List<OrderItem> orderItems) {
         List<OrderItemResponse> orderItemResponses = new ArrayList<>();
         orderItems.forEach(item -> {
@@ -224,7 +245,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
             OrderItemResponse response = OrderItemResponse.builder()
                 .id(item.getId())
                 .equipmentName(equipment != null ? equipment.getName() : null)
-                .equipmentRoomName(equipment != null ?equipment.getRoom().getRoomName() : null)
+                .equipmentRoomName(equipment != null ? equipment.getRoom().getRoomName() : null)
                 .quantity(item.getQuantity())
                 .status(item.getStatus())
                 .notes(item.getNotes())

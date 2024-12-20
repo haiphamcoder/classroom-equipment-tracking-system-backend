@@ -33,9 +33,9 @@ public class BorrowOrderController {
         return ResponseEntity.ok(borrowOrderService.extendDeadline(request));
     }
 
-    @PostMapping("/cancel/{orderId}")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(borrowOrderService.cancelOrder(orderId));
+    @PostMapping("/cancel")
+    public ResponseEntity<String> cancelOrders(@RequestBody List<Long> orderIds) {
+        return ResponseEntity.ok(borrowOrderService.cancelOrders(orderIds));
     }
 
     @GetMapping("/list")

@@ -12,8 +12,8 @@ public interface BorrowOrderService {
     String createOrder(CreateBorrowOrderRequest request);
     BorrowOrderResponse getOrderById(Long id);
     String extendDeadline(ExtendDeadlineRequest request);
-    String cancelOrder(Long orderId);
     List<BorrowOrderResponse> getOrders(String sort, OrderSortBy sortBy);
     List<BorrowOrderResponse> searchOrders(String borrowerName);
     String processReturn(CreateReturnRequest request);
+    String cancelOrders(List<Long> orderIds);
 }
