@@ -1,4 +1,4 @@
-package com.classroom.equipment.config;
+package com.classroom.equipment.config.exception;
 
 import lombok.Getter;
 
@@ -8,4 +8,3 @@ public class ApiException extends RuntimeException {
         super(message);
     }
 }
-

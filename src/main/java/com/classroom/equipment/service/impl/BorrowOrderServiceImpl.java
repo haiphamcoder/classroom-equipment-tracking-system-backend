@@ -1,7 +1,7 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.*;
-import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.config.exception.ApiException;
 import com.classroom.equipment.dtos.export.BorrowOrderExportDTO;
 import com.classroom.equipment.dtos.request.*;
 import com.classroom.equipment.dtos.response.BorrowOrderResponse;
