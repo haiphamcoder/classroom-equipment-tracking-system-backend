@@ -1,7 +1,7 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.BorrowerStatus;
-import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.config.exception.ApiException;
 import com.classroom.equipment.dtos.request.AddBorrowerRequest;
 import com.classroom.equipment.entity.Borrower;
 import com.classroom.equipment.repository.BorrowerRepository;

@@ -1,7 +1,7 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.EquipmentStatus;
-import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.config.exception.ApiException;
 import com.classroom.equipment.dtos.export.EquipmentExportDTO;
 import com.classroom.equipment.dtos.request.AddEquipmentRequest;
 import com.classroom.equipment.dtos.request.UpdateEquipmentRequest;

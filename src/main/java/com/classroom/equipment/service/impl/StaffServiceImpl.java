@@ -1,7 +1,7 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.constant.CommonConstants;
-import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.config.exception.ApiException;
 import com.classroom.equipment.dtos.export.StaffExportDTO;
 import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;

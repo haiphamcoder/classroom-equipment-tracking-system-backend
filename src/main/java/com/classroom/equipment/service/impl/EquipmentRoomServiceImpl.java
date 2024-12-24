@@ -1,7 +1,7 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.Status;
-import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.config.exception.ApiException;
 import com.classroom.equipment.dtos.request.AddEquipmentRoomRequest;
 import com.classroom.equipment.entity.Building;
 import com.classroom.equipment.entity.EquipmentRoom;

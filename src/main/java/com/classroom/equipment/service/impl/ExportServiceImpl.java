@@ -1,6 +1,5 @@
 package com.classroom.equipment.service.impl;
 
-import com.classroom.equipment.config.ApiException;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.ResponseEntity;
 import org.springframework.core.io.Resource;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
+import com.classroom.equipment.config.exception.ApiException;
 import com.classroom.equipment.service.ExportService;
 
 @Service
@@ -131,14 +131,12 @@ public class ExportServiceImpl implements ExportService {
     }
     
     private void setCellValue(Cell cell, Object value) {
-        if (value == null) {
-            cell.setCellValue("-");
-        } else if (value instanceof Number) {
-            cell.setCellValue(((Number) value).doubleValue());
-        } else if (value instanceof LocalDateTime) {
-            cell.setCellValue(((LocalDateTime) value).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-        } else {
-            cell.setCellValue(value.toString());
+        switch (value) {
+            case null -> cell.setCellValue("-");
+            case Number number -> cell.setCellValue(number.doubleValue());
+            case LocalDateTime localDateTime ->
+                cell.setCellValue(localDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            default -> cell.setCellValue(value.toString());
         }
     }
     
