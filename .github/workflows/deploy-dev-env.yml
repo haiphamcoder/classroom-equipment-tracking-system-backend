@@ -2,7 +2,7 @@ name: Deploy Development Environment
 
 on:
   push:
-    branches: [ "feature-dev" ]
+    branches: [ "feature-dev", "test-deploy" ]
 
 jobs:
 
@@ -81,10 +81,13 @@ jobs:
           TOKEN=$(gcloud auth print-access-token)
           sed -i "s/\${TOKEN}/${TOKEN}/g" .k8s/kustomization.yml
 
-      - name: Replace variables in service file
+      - name: Replace variables in service and ingress files
         run: |-
           sed -i "s/\${DEPLOYMENT_NAME}/${{ env.DEPLOYMENT_NAME }}/g" .k8s/service.yml
           sed -i "s/\${LOAD_BALANCER_IP}/${{ env.LOAD_BALANCER_IP }}/g" .k8s/service.yml
+          sed -i "s/\${DEPLOYMENT_NAME}/${{ env.DEPLOYMENT_NAME }}/g" .k8s/ingress.yml
+          sed -i "s/\${LOAD_BALANCER_IP}/${{ env.LOAD_BALANCER_IP }}/g" .k8s/ingress.yml
+          
 
       - name: Replace variables in deployment file
         run: |-

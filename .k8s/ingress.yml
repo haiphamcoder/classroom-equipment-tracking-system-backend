@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ${DEPLOYMENT_NAME}-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: "gce"
+spec:
+  tls:
+    - hosts:
+        - "${LOAD_BALANCER_IP}"
+      secretName: ssl-cert-secret
+  rules:
+    - http:
+        paths:
+          - path: "/"
+            pathType: Prefix
+            backend:
+              service:
+                name: ${DEPLOYMENT_NAME}-service
+                port:
+                  number: 8081

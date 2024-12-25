@@ -3,13 +3,21 @@ kind: "Service"
 metadata:
   name: ${DEPLOYMENT_NAME}-service
   namespace: "default"
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
   labels:
     app: "development"
 spec:
   ports:
-    - protocol: "TCP"
+    - name: "http"
+      protocol: "TCP"
       port: 8081
       targetPort: 8081
+    - name: "https"
+      protocol: "TCP"
+      port: 443
+      targetPort: 8081
+
   selector:
     app: "development"
   type: "LoadBalancer"

@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - deployment.yml
   - service.yml
+  - ingress.yml
 
 images:
   - name: ${GAR_LOCATION}-docker.pkg.dev/${PROJECT_ID}/${REPOSITORY}/${IMAGE}
