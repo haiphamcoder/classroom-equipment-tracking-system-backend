@@ -1,7 +1,8 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.constant.CommonConstants;
-import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.config.exception.ApiException;
+import com.classroom.equipment.dtos.export.StaffExportDTO;
 import com.classroom.equipment.dtos.request.ChangePasswordRequest;
 import com.classroom.equipment.dtos.request.CreateStaffRequest;
 import com.classroom.equipment.dtos.request.LoginRequest;
@@ -13,16 +14,21 @@ import com.classroom.equipment.repository.BuildingRepository;
 import com.classroom.equipment.repository.StaffLoginRepository;
 import com.classroom.equipment.repository.StaffRepository;
 import com.classroom.equipment.service.EmailService;
+import com.classroom.equipment.service.ExportService;
 import com.classroom.equipment.service.StaffService;
 import com.classroom.equipment.utils.PasswordUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +38,7 @@ public class StaffServiceImpl implements StaffService {
     private final BuildingRepository buildingRepository;
     private final PasswordUtils passwordUtils;
     private final EmailService emailService;
+    private final ExportService exportService;
 
     @Override
     public Staff getStaffById(Long id) {
@@ -182,6 +189,20 @@ public class StaffServiceImpl implements StaffService {
         staffLoginRepository.save(staffLogin);
 
         return "Password changed successfully";
+    }
+
+    @Override
+    public ResponseEntity<Resource> exportStaffs(String format) {
+        List<Staff> staffs = staffRepository.findAll();
+        
+        List<StaffExportDTO> exportData = staffs.stream()
+            .map(StaffExportDTO::from)
+            .collect(Collectors.toList());
+        
+        String filename = String.format("Staff_List_%s", 
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss")));
+            
+        return exportService.exportToFile(exportData, filename, format);
     }
 
 }

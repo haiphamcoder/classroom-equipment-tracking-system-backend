@@ -6,7 +6,11 @@ import com.classroom.equipment.entity.Equipment;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
+
 public interface EquipmentService {
+
     Equipment getEquipmentById(Long id);
 
     String createEquipment(AddEquipmentRequest request);
@@ -15,6 +19,7 @@ public interface EquipmentService {
 
     String updateEquipment(UpdateEquipmentRequest request);
 
-    String deleteEquipment(Long id);
+    String deleteEquipments(List<Long> ids);
 
+    ResponseEntity<Resource> exportEquipments(String format);
 }

@@ -1,7 +1,8 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.EquipmentStatus;
-import com.classroom.equipment.config.ApiException;
+import com.classroom.equipment.config.exception.ApiException;
+import com.classroom.equipment.dtos.export.EquipmentExportDTO;
 import com.classroom.equipment.dtos.request.AddEquipmentRequest;
 import com.classroom.equipment.dtos.request.UpdateEquipmentRequest;
 import com.classroom.equipment.entity.Equipment;
@@ -9,17 +10,24 @@ import com.classroom.equipment.entity.EquipmentRoom;
 import com.classroom.equipment.repository.EquipmentRepository;
 import com.classroom.equipment.service.EquipmentRoomService;
 import com.classroom.equipment.service.EquipmentService;
+import com.classroom.equipment.service.ExportService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EquipmentServiceImpl implements EquipmentService {
     private final EquipmentRepository equipmentRepository;
     private final EquipmentRoomService equipmentRoomService;
+    private final ExportService exportService;
 
     @Override
     public Equipment getEquipmentById(Long id) {
@@ -70,12 +78,42 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public String deleteEquipment(Long id) {
-        Equipment equipment = getEquipmentById(id);
-        equipment.setDeleted(true);
-        equipmentRepository.save(equipment);
+    @Transactional
+    public String deleteEquipments(List<Long> ids) {
+        List<Equipment> equipments = equipmentRepository.findAllById(ids);
+        
+        if (equipments.isEmpty()) {
+            throw new ApiException("No equipment found with provided ids");
+        }
 
-        return "Delete equipment successfully";
+        boolean hasBorrowedEquipment = equipments.stream()
+            .anyMatch(equipment -> equipment.getStatus() == EquipmentStatus.BORROWED);
+        
+        if (hasBorrowedEquipment) {
+            throw new ApiException("Cannot delete equipment that is currently borrowed");
+        }
+
+        equipments.forEach(equipment -> {
+            equipment.setDeleted(true);
+            equipment.setStatus(EquipmentStatus.UNAVAILABLE);
+        });
+        
+        equipmentRepository.saveAll(equipments);
+        return "Deleted " + equipments.size() + " equipment successfully";
+    }
+
+    @Override
+    public ResponseEntity<Resource> exportEquipments(String format) {
+        List<Equipment> equipments = equipmentRepository.findAll();
+        
+        List<EquipmentExportDTO> exportData = equipments.stream()
+            .map(EquipmentExportDTO::from)
+            .collect(Collectors.toList());
+        
+        String filename = String.format("Equipment_List_%s", 
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss")));
+            
+        return exportService.exportToFile(exportData, filename, format);
     }
 
 }

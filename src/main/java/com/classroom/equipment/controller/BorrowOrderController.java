@@ -4,9 +4,11 @@ import com.classroom.equipment.common.enums.OrderSortBy;
 import com.classroom.equipment.dtos.request.CreateBorrowOrderRequest;
 import com.classroom.equipment.dtos.request.ExtendDeadlineRequest;
 import com.classroom.equipment.dtos.request.CreateReturnRequest;
+import com.classroom.equipment.dtos.request.OrderSearchRequest;
 import com.classroom.equipment.dtos.response.BorrowOrderResponse;
 import com.classroom.equipment.service.BorrowOrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,9 +35,9 @@ public class BorrowOrderController {
         return ResponseEntity.ok(borrowOrderService.extendDeadline(request));
     }
 
-    @PostMapping("/cancel/{orderId}")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long orderId) {
-        return ResponseEntity.ok(borrowOrderService.cancelOrder(orderId));
+    @PostMapping("/cancel")
+    public ResponseEntity<String> cancelOrders(@RequestBody List<Long> orderIds) {
+        return ResponseEntity.ok(borrowOrderService.cancelOrders(orderIds));
     }
 
     @GetMapping("/list")
@@ -47,12 +49,19 @@ public class BorrowOrderController {
 
     @GetMapping("/search")
     public ResponseEntity<List<BorrowOrderResponse>> searchOrders(
-            @RequestParam(required = false) String borrowerName) {
-        return ResponseEntity.ok(borrowOrderService.searchOrders(borrowerName));
+            @RequestParam(required = false) OrderSearchRequest searchRequest) {
+        return ResponseEntity.ok(borrowOrderService.searchOrders(searchRequest));
     }
 
     @PostMapping("/return")
     public ResponseEntity<String> returnOrder(@RequestBody CreateReturnRequest request) {
         return ResponseEntity.ok(borrowOrderService.processReturn(request));
+    }
+
+    @GetMapping("/export")
+    public ResponseEntity<Resource> exportOrders(
+            @RequestParam(defaultValue = "excel") String format,
+            @RequestParam(required = false) OrderSearchRequest searchRequest) {
+        return borrowOrderService.exportOrders(format, searchRequest);
     }
 }

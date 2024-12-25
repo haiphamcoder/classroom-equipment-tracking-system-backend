@@ -1,10 +1,9 @@
 package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.enums.*;
-import com.classroom.equipment.config.ApiException;
-import com.classroom.equipment.dtos.request.CreateBorrowOrderRequest;
-import com.classroom.equipment.dtos.request.ExtendDeadlineRequest;
-import com.classroom.equipment.dtos.request.CreateReturnRequest;
+import com.classroom.equipment.config.exception.ApiException;
+import com.classroom.equipment.dtos.export.BorrowOrderExportDTO;
+import com.classroom.equipment.dtos.request.*;
 import com.classroom.equipment.dtos.response.BorrowOrderResponse;
 import com.classroom.equipment.dtos.response.OrderItemResponse;
 
@@ -20,16 +19,19 @@ import com.classroom.equipment.repository.EquipmentRepository;
 import com.classroom.equipment.repository.StaffRepository;
 import com.classroom.equipment.repository.ReturnRecordRepository;
 import com.classroom.equipment.service.BorrowOrderService;
+import com.classroom.equipment.service.ExportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
+import org.springframework.core.io.Resource;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
     private final EquipmentRepository equipmentRepository;
     private final StaffRepository staffRepository;
     private final ReturnRecordRepository returnRecordRepository;
+    private final ExportService exportService;
 
     @Override
     @Transactional
@@ -49,6 +52,25 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         Staff staff = staffRepository.findById(request.getStaffId())
             .orElseThrow(() -> new ApiException("Staff not found"));
 
+        if (borrower.getStatus() != BorrowerStatus.ACTIVE) {
+            throw new ApiException("Borrower account is not active");
+        }
+
+        for (OrderItemRequest itemRequest : request.getItems()) {
+            Equipment equipment = equipmentRepository.findById(itemRequest.getEquipmentId())
+                .orElseThrow(() -> new ApiException("Equipment not found"));
+                
+            if (equipment.getQuantity() < itemRequest.getQuantity()) {
+                throw new ApiException("Insufficient quantity for equipment: " + equipment.getName());
+            }
+            
+            equipment.setQuantity(equipment.getQuantity() - itemRequest.getQuantity());
+            if (equipment.getQuantity() == 0) {
+                equipment.setStatus(EquipmentStatus.UNAVAILABLE);
+            }
+            equipmentRepository.save(equipment);
+        }
+
         BorrowOrder order = BorrowOrder.builder()
             .borrower(borrower)
             .staff(staff)
@@ -57,21 +79,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
             .status(OrderStatus.BORROWED)
             .build();
 
-        List<OrderItem> orderItems = request.getItems()
-            .stream()
-            .map(itemRequest -> {
-                Equipment equipment = equipmentRepository.findById(itemRequest.getEquipmentId())
-                .orElseThrow(() -> new ApiException("Equipment not found"));
-
-            return OrderItem.builder()
-                .order(order)
-                .equipment(equipment)
-                .quantity(itemRequest.getQuantity())
-                .status(EquipmentStatus.BORROWED)
-                .notes(itemRequest.getNotes())
-                .build();
-        }).collect(Collectors.toList());
-
+        List<OrderItem> orderItems = createOrderItems(request.getItems(), order);
         order.setOrderItems(orderItems);
         borrowOrderRepository.save(order);
 
@@ -117,22 +125,6 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
     }
 
     @Override
-    @Transactional
-    public String cancelOrder(Long orderId) {
-        BorrowOrder order = borrowOrderRepository.findById(orderId)
-            .orElseThrow(() -> new ApiException("Order not found"));
-
-        if (order.getStatus() != OrderStatus.BORROWED) {
-            throw new ApiException("Can only cancel un-return orders");
-        }
-
-        order.setStatus(OrderStatus.CANCELLED);
-        borrowOrderRepository.save(order);
-
-        return "Order cancelled successfully";
-    }
-
-    @Override
     public List<BorrowOrderResponse> getOrders(String sort, OrderSortBy sortBy) {
         Sort.Direction direction = sort.equalsIgnoreCase("DESC") ? 
             Sort.Direction.DESC : Sort.Direction.ASC;
@@ -152,16 +144,28 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
     }
 
     @Override
-    public List<BorrowOrderResponse> searchOrders(String borrowerName) {
-        if (borrowerName.isEmpty()) {
-            return borrowOrderRepository.findAll()
-                .stream()
-                .map(this::toBorrowOrderResponse)
-                .collect(Collectors.toList());
-        }
-        return borrowOrderRepository.findByBorrowerNameContainingIgnoreCase(borrowerName)
-            .stream()
-            .map(this::toBorrowOrderResponse)
+    public List<BorrowOrderResponse> searchOrders(OrderSearchRequest request) {
+        Sort.Direction direction = request.getSortDirection().equalsIgnoreCase("DESC") ? 
+            Sort.Direction.DESC : Sort.Direction.ASC;
+
+        String sortField = request.getSortBy() == null ? "id" : switch (request.getSortBy()) {
+            case BORROWER -> "borrower.name";
+            case EQUIPMENT -> "orderItems.equipment.name";
+            case STATUS -> "status";
+            case BORROW_TIME -> "borrowTime";
+            case RETURN_DEADLINE -> "returnDeadline";
+        };
+
+        List<BorrowOrder> orders = borrowOrderRepository.searchOrders(
+            request.getBorrowerName(),
+            request.getStatus(),
+            request.getStartDate(),
+            request.getEndDate(),
+            Sort.by(direction, sortField)
+        );
+        
+        return orders.stream()
+            .map(this::mapToResponse)
             .collect(Collectors.toList());
     }
 
@@ -178,34 +182,72 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         Staff staff = staffRepository.findById(request.getStaffId())
             .orElseThrow(() -> new ApiException("Staff not found"));
 
-        ReturnStatus returnStatus = switch (request.getEquipmentStatus()) {
-            case DAMAGED -> ReturnStatus.REJECTED;
-            case NORMAL -> ReturnStatus.COMPLETED;
-            case LOST -> ReturnStatus.PENDING;
-            default -> throw new ApiException("Invalid equipment status for return");
-        };
+        Map<Long, OrderItem> orderItemMap = order.getOrderItems().stream()
+            .collect(Collectors.toMap(OrderItem::getId, item -> item));
+
+        boolean hasProblematicReturn = false;
+        boolean allItemsReturned = true;
+
+        for (CreateReturnRequest.ReturnItemRequest returnItem : request.getItems()) {
+            OrderItem orderItem = orderItemMap.get(returnItem.getOrderItemId());
+            if (orderItem == null) {
+                throw new ApiException("Order item not found: " + returnItem.getOrderItemId());
+            }
+
+            if (returnItem.getReturnQuantity() > orderItem.getQuantity()) {
+                throw new ApiException("Return quantity exceeds borrowed quantity for item: " + orderItem.getEquipment().getName());
+            }
+
+            Equipment equipment = orderItem.getEquipment();
+            
+            if (returnItem.getStatus() == EquipmentStatus.NORMAL) {
+                equipment.setQuantity(equipment.getQuantity() + returnItem.getReturnQuantity());
+                if (equipment.getQuantity() > 0) {
+                    equipment.setStatus(EquipmentStatus.AVAILABLE);
+                }
+            } else {
+                hasProblematicReturn = true;
+            }
+            equipmentRepository.save(equipment);
+
+            orderItem.setReturnTime(LocalDateTime.now());
+            orderItem.setStatus(returnItem.getStatus());
+            orderItem.setNotes(returnItem.getNotes());
+            
+            if (returnItem.getReturnQuantity() < orderItem.getQuantity()) {
+                allItemsReturned = false;
+            }
+        }
 
         Borrower borrower = order.getBorrower();
-        if (request.getEquipmentStatus() == EquipmentStatus.DAMAGED) {
-            borrower.setStatus(BorrowerStatus.SUSPENDED);
-            borrower.setNote("Suspended due to damaged equipment return");
-        } else if (request.getEquipmentStatus() == EquipmentStatus.LOST) {
-            borrower.setStatus(BorrowerStatus.LOCKED);
-            borrower.setNote("Locked due to lost equipment");
+        if (hasProblematicReturn) {
+            boolean hasLostItems = request.getItems().stream()
+                .anyMatch(item -> item.getStatus() == EquipmentStatus.LOST);
+            
+            if (hasLostItems) {
+                borrower.setStatus(BorrowerStatus.LOCKED);
+                borrower.setNote("Locked due to lost equipment");
+            } else {
+                borrower.setStatus(BorrowerStatus.SUSPENDED);
+                borrower.setNote("Suspended due to damaged equipment return");
+            }
+            borrowerRepository.save(borrower);
         }
-        borrowerRepository.save(borrower);
+
+        ReturnStatus returnStatus = hasProblematicReturn ?
+            (borrower.getStatus() == BorrowerStatus.LOCKED ? ReturnStatus.PENDING : ReturnStatus.REJECTED) :
+            ReturnStatus.COMPLETED;
 
         ReturnRecord returnRecord = ReturnRecord.builder()
             .order(order)
             .staff(staff)
             .returnTime(LocalDateTime.now())
-            .equipmentStatus(request.getEquipmentStatus())
+            .equipmentStatus(hasProblematicReturn ? EquipmentStatus.DAMAGED : EquipmentStatus.NORMAL)
             .status(returnStatus)
             .build();
-
         returnRecordRepository.save(returnRecord);
 
-        if (returnStatus == ReturnStatus.COMPLETED) {
+        if (allItemsReturned) {
             order.setStatus(OrderStatus.RETURNED);
             borrowOrderRepository.save(order);
         }
@@ -217,6 +259,62 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         };
     }
 
+    @Override
+    @Transactional
+    public String cancelOrders(List<Long> orderIds) {
+        List<BorrowOrder> orders = borrowOrderRepository.findAllById(orderIds);
+        
+        if (orders.isEmpty()) {
+            throw new ApiException("No orders found with provided ids");
+        }
+
+        List<BorrowOrder> invalidOrders = orders.stream()
+            .filter(order -> order.getStatus() != OrderStatus.BORROWED)
+            .toList();
+        
+        if (!invalidOrders.isEmpty()) {
+            throw new ApiException("Cannot cancel orders that are already returned or cancelled: " + 
+                invalidOrders.stream()
+                    .map(order -> "Order #" + order.getId())
+                    .collect(Collectors.joining(", ")));
+        }
+
+        orders.forEach(order -> {
+            order.getOrderItems().forEach(item -> {
+                Equipment equipment = item.getEquipment();
+                equipment.setQuantity(equipment.getQuantity() + item.getQuantity());
+                if (equipment.getQuantity() > 0) {
+                    equipment.setStatus(EquipmentStatus.AVAILABLE);
+                }
+                equipmentRepository.save(equipment);
+            });
+            
+            order.setStatus(OrderStatus.CANCELLED);
+        });
+        
+        borrowOrderRepository.saveAll(orders);
+        return "Cancelled " + orders.size() + " orders successfully";
+    }
+
+    @Override
+    public ResponseEntity<Resource> exportOrders(String format, OrderSearchRequest searchRequest) {
+        List<BorrowOrderResponse> orders;
+        if (searchRequest != null) {
+            orders = searchOrders(searchRequest);
+        } else {
+            orders = getOrders("ASC", OrderSortBy.BORROW_TIME);
+        }
+        
+        List<BorrowOrderExportDTO> exportData = orders.stream()
+            .map(BorrowOrderExportDTO::from)
+            .collect(Collectors.toList());
+        
+        String filename = String.format("Borrow_Orders_Report_%s", 
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy_HH-mm-ss")));
+            
+        return exportService.exportToFile(exportData, filename, format);
+    }
+
     private List<OrderItemResponse> toOrderItemResponse(List<OrderItem> orderItems) {
         List<OrderItemResponse> orderItemResponses = new ArrayList<>();
         orderItems.forEach(item -> {
@@ -224,7 +322,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
             OrderItemResponse response = OrderItemResponse.builder()
                 .id(item.getId())
                 .equipmentName(equipment != null ? equipment.getName() : null)
-                .equipmentRoomName(equipment != null ?equipment.getRoom().getRoomName() : null)
+                .equipmentRoomName(equipment != null ? equipment.getRoom().getRoomName() : null)
                 .quantity(item.getQuantity())
                 .status(item.getStatus())
                 .notes(item.getNotes())
@@ -244,5 +342,34 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
             .status(order.getStatus())
             .items(toOrderItemResponse(order.getOrderItems()))
             .build();
+    }
+
+    private BorrowOrderResponse mapToResponse(BorrowOrder order) {
+        return BorrowOrderResponse.builder()
+            .id(order.getId())
+            .borrowerName(order.getBorrower().getName())
+            .staffName(order.getStaff().getName())
+            .borrowTime(order.getBorrowTime())
+            .returnDeadline(order.getReturnDeadline())
+            .status(order.getStatus())
+            .items(toOrderItemResponse(order.getOrderItems()))
+            .build();
+    }
+
+    private List<OrderItem> createOrderItems(List<OrderItemRequest> itemRequests, BorrowOrder order) {
+        return itemRequests.stream()
+            .map(itemRequest -> {
+                Equipment equipment = equipmentRepository.findById(itemRequest.getEquipmentId())
+                    .orElseThrow(() -> new ApiException("Equipment not found"));
+
+                return OrderItem.builder()
+                    .order(order)
+                    .equipment(equipment)
+                    .quantity(itemRequest.getQuantity())
+                    .status(EquipmentStatus.BORROWED)
+                    .notes(itemRequest.getNotes())
+                    .build();
+            })
+            .collect(Collectors.toList());
     }
 } 
