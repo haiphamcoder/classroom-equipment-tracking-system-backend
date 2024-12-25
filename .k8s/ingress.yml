@@ -11,8 +11,7 @@ spec:
         - "${LOAD_BALANCER_IP}"
       secretName: ssl-cert-secret
   rules:
-    - host: "${LOAD_BALANCER_IP}"
-      http:
+    - http:
         paths:
           - path: "/"
             pathType: Prefix
