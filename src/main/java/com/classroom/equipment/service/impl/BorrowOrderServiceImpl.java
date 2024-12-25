@@ -282,11 +282,13 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         orders.forEach(order -> {
             order.getOrderItems().forEach(item -> {
                 Equipment equipment = item.getEquipment();
-                equipment.setQuantity(equipment.getQuantity() + item.getQuantity());
-                if (equipment.getQuantity() > 0) {
-                    equipment.setStatus(EquipmentStatus.AVAILABLE);
+                if (equipment != null) {
+                    equipment.setQuantity(equipment.getQuantity() + item.getQuantity());
+                    if (equipment.getQuantity() > 0) {
+                        equipment.setStatus(EquipmentStatus.AVAILABLE);
+                    }
+                    equipmentRepository.save(equipment);
                 }
-                equipmentRepository.save(equipment);
             });
             
             order.setStatus(OrderStatus.CANCELLED);
