@@ -22,7 +22,7 @@ public class NotificationService {
     private final MyTelegramBot telegramBotAdapter;
 
     public NotificationService(EmailService emailService,
-                                 NotificationSchedulerService notificationSchedulerService,
+                               NotificationSchedulerService notificationSchedulerService,
                                MyTelegramBot telegramBotAdapter) {
         this.emailService = emailService;
         this.notificationSchedulerService = notificationSchedulerService;
@@ -53,8 +53,8 @@ public class NotificationService {
         }
     }
 
-    public void sendReminderNotification(String recipientEmail, String recipientTelegramId, Map<String, Object> data){
-        if (!StringUtils.isNullOrEmpty(recipientTelegramId)){
+    public void sendReminderNotification(String recipientEmail, String recipientTelegramId, Map<String, Object> data) {
+        if (!StringUtils.isNullOrEmpty(recipientTelegramId)) {
             StringBuilder message = new StringBuilder();
             message.append("📢 *Thông Báo Trả Thiết Bị* 📢\n\n")
                     .append("Xin chào, *").append(data.get("borrowerName")).append("*!\n\n")
@@ -78,7 +78,9 @@ public class NotificationService {
 
             telegramBotAdapter.sendMessage(recipientTelegramId, message.toString(), "Markdown");
 
-        } else {
+        }
+
+        if (!StringUtils.isNullOrEmpty(recipientEmail)) {
             String subject = "Nhắc nhở trả thiết bị";
             String template = "borrow-order-reminder";
             emailService.sendEmail(recipientEmail, subject, data, template);
@@ -86,10 +88,10 @@ public class NotificationService {
     }
 
     @Scheduled(initialDelay = 10000L, fixedDelay = Long.MAX_VALUE)
-    public void test(){
+    public void test() {
         long borrowOrderId = 1;
         Map<String, Object> data = buildBodyModelCreateTicket(borrowOrderId);
-        sendReminderNotification("ngochai285nd@gmail.com", null, data);
+        sendReminderNotification("ngochai285nd@gmail.com", "1653490505", data);
     }
 
 

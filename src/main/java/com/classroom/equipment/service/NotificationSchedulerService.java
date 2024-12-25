@@ -1,6 +1,7 @@
 package com.classroom.equipment.service;
 
 import com.classroom.equipment.common.enums.NotificationStatus;
+import com.classroom.equipment.dtos.request.CreateBorrowOrderRequest;
 import com.classroom.equipment.entity.NotificationSchedule;
 import com.classroom.equipment.repository.NotificationScheduleRepository;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,12 @@ public class NotificationSchedulerService {
     }
 
     public NotificationSchedule createNotificationSchedule(NotificationSchedule notificationSchedule) {
+        return notificationScheduleRepository.save(notificationSchedule);
+    }
+
+    public NotificationSchedule createNotificationScheduleFromOrderRequest(CreateBorrowOrderRequest request){
+        NotificationSchedule notificationSchedule = new NotificationSchedule();
+        // TODO: Implement this method
         return notificationScheduleRepository.save(notificationSchedule);
     }
 
