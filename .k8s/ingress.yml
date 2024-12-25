@@ -11,7 +11,8 @@ spec:
         - "${LOAD_BALANCER_IP}"
       secretName: ssl-cert-secret
   rules:
-    - http:
+    - host: "${LOAD_BALANCER_IP}"
+      http:
         paths:
           - path: "/"
             pathType: Prefix
@@ -19,4 +20,4 @@ spec:
               service:
                 name: ${DEPLOYMENT_NAME}-service
                 port:
-                  number: 8081
+                  number: 80
