@@ -6,6 +6,7 @@ import com.classroom.equipment.entity.NotificationSchedule;
 import com.classroom.equipment.service.impl.MyTelegramBot;
 import com.classroom.equipment.utils.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@Slf4j
 public class NotificationService {
     private final EmailService emailService;
     private final NotificationSchedulerService notificationSchedulerService;
@@ -43,14 +45,7 @@ public class NotificationService {
 
     public void sendReminderNotifcation(String recipientEmail, String recipientTelegramId, String content) throws JsonProcessingException {
         Map<String, Object> data = CommonConstants.OBJECT_MAPPER.readValue(content, Map.class);
-        if (!StringUtils.isNullOrEmpty(recipientTelegramId)) {
-            String message = data.get("telegram").toString();
-            telegramBotAdapter.sendMessage(recipientTelegramId, message, "Markdown");
-        } else {
-            String subject = data.get("subject").toString();
-            String message = data.get("body").toString();
-            emailService.sendEmail(recipientEmail, subject, message);
-        }
+        sendReminderNotification(recipientEmail, recipientTelegramId, data);
     }
 
     public void sendReminderNotification(String recipientEmail, String recipientTelegramId, Map<String, Object> data) {
@@ -87,10 +82,11 @@ public class NotificationService {
         }
     }
 
-    @Scheduled(initialDelay = 10000L, fixedDelay = Long.MAX_VALUE)
-    public void test() {
+//    @Scheduled(initialDelay = 10000L, fixedDelay = Long.MAX_VALUE)
+    public void test() throws JsonProcessingException {
         long borrowOrderId = 1;
         Map<String, Object> data = buildBodyModelCreateTicket(borrowOrderId);
+        log.info(CommonConstants.OBJECT_MAPPER.writeValueAsString(data));
         sendReminderNotification("ngochai285nd@gmail.com", "1653490505", data);
     }
 
