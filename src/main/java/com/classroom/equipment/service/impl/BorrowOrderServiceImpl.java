@@ -7,12 +7,7 @@ import com.classroom.equipment.dtos.request.*;
 import com.classroom.equipment.dtos.response.BorrowOrderResponse;
 import com.classroom.equipment.dtos.response.OrderItemResponse;
 
-import com.classroom.equipment.entity.BorrowOrder;
-import com.classroom.equipment.entity.Borrower;
-import com.classroom.equipment.entity.Equipment;
-import com.classroom.equipment.entity.Staff;
-import com.classroom.equipment.entity.ReturnRecord;
-import com.classroom.equipment.entity.OrderItem;
+import com.classroom.equipment.entity.*;
 import com.classroom.equipment.repository.BorrowOrderRepository;
 import com.classroom.equipment.repository.BorrowerRepository;
 import com.classroom.equipment.repository.EquipmentRepository;
@@ -20,7 +15,9 @@ import com.classroom.equipment.repository.StaffRepository;
 import com.classroom.equipment.repository.ReturnRecordRepository;
 import com.classroom.equipment.service.BorrowOrderService;
 import com.classroom.equipment.service.ExportService;
+import com.classroom.equipment.service.NotificationSchedulerService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -35,6 +32,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BorrowOrderServiceImpl implements BorrowOrderService {
     private final BorrowOrderRepository borrowOrderRepository;
     private final BorrowerRepository borrowerRepository;
@@ -42,6 +40,7 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
     private final StaffRepository staffRepository;
     private final ReturnRecordRepository returnRecordRepository;
     private final ExportService exportService;
+    private final NotificationSchedulerService notificationSchedulerService;
 
     @Override
     @Transactional
@@ -81,7 +80,12 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
 
         List<OrderItem> orderItems = createOrderItems(request.getItems(), order);
         order.setOrderItems(orderItems);
-        borrowOrderRepository.save(order);
+        BorrowOrder savedOrder = borrowOrderRepository.save(order);
+        log.info("Borrow order created successfully");
+        NotificationSchedule notificationSchedule = notificationSchedulerService.createNotificationScheduleFromBorrowOrder(savedOrder);
+        if (notificationSchedule!=null){
+            log.info("Notification schedule created successfully");
+        }
 
         return "Borrow order created successfully";
     }
@@ -282,11 +286,13 @@ public class BorrowOrderServiceImpl implements BorrowOrderService {
         orders.forEach(order -> {
             order.getOrderItems().forEach(item -> {
                 Equipment equipment = item.getEquipment();
-                equipment.setQuantity(equipment.getQuantity() + item.getQuantity());
-                if (equipment.getQuantity() > 0) {
-                    equipment.setStatus(EquipmentStatus.AVAILABLE);
+                if (equipment != null) {
+                    equipment.setQuantity(equipment.getQuantity() + item.getQuantity());
+                    if (equipment.getQuantity() > 0) {
+                        equipment.setStatus(EquipmentStatus.AVAILABLE);
+                    }
+                    equipmentRepository.save(equipment);
                 }
-                equipmentRepository.save(equipment);
             });
             
             order.setStatus(OrderStatus.CANCELLED);

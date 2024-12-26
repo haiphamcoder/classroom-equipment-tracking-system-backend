@@ -2,6 +2,9 @@ package com.classroom.equipment.service.impl;
 
 import com.classroom.equipment.common.constant.CommonConstants;
 import com.classroom.equipment.config.telegram.properties.TelegramBotProperties;
+import com.classroom.equipment.entity.BorrowOrder;
+import com.classroom.equipment.entity.OrderItem;
+import com.classroom.equipment.repository.BorrowOrderRepository;
 import com.classroom.equipment.repository.NotificationRecipientRepository;
 import com.classroom.equipment.repository.UserRepository;
 import com.classroom.equipment.entity.NotificationRecipient;
@@ -23,6 +26,7 @@ import org.telegram.telegrambots.meta.generics.TelegramClient;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +38,7 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
     private final EmailService emailService;
     private final UserRepository userRepository;
     private final NotificationRecipientRepository notiRecipientRepository;
+    private final BorrowOrderRepository borrowOrderRepository;
     private final TelegramClient telegramClient;
 
     private final Cache<String, UserSession> userSessions = CacheBuilder.newBuilder()
@@ -44,10 +49,12 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
     public MyTelegramBot(@Qualifier("telegramBotProperties") TelegramBotProperties telegramBotProperties,
                          EmailService emailService,
                          UserRepository userRepository,
-                         NotificationRecipientRepository notiRecipientRepository) {
+                         NotificationRecipientRepository notiRecipientRepository,
+                         BorrowOrderRepository borrowOrderRepository) {
         this.emailService = emailService;
         this.userRepository = userRepository;
         this.notiRecipientRepository = notiRecipientRepository;
+        this.borrowOrderRepository = borrowOrderRepository;
         this.telegramClient = new OkHttpTelegramClient(telegramBotProperties.getToken());
     }
 
@@ -69,8 +76,32 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
     private void checkCommand(String chatId, String messageText) {
         switch (messageText) {
             case "/start" -> startCommand(chatId);
+            case "/check" -> checkingOrder(chatId);
             case "/help" -> showHelp(chatId);
             default -> sendMessage(chatId, "Invalid command.\nPlease use /help to see available commands.");
+        }
+    }
+
+    private void checkingOrder(String chatId){
+        List<NotificationRecipient> recipients = notiRecipientRepository.findAllByTelegramId(chatId);
+        if (recipients.isEmpty()) {
+            sendMessage(chatId, "Your Telegram ID has not been registered.\nPlease use /start to register.");
+        } else {
+            List<BorrowOrder> orders = borrowOrderRepository.findAllByBorrowerId(recipients.getFirst().getUserId());
+            if (orders.isEmpty()) {
+                sendMessage(chatId, "No orders found.");
+                return;
+            }
+            orders.forEach(order -> {
+                List<OrderItem> orderItems = order.getOrderItems();
+                StringBuilder message = new StringBuilder("Order ID: " + order.getId() + "\n");
+                orderItems.forEach(item -> {
+                    message.append("Item: ").append(item.getEquipment().getName()).append("\n")
+                            .append("Quantity: ").append(item.getQuantity()).append("\n")
+                            .append("Status: ").append(item.getStatus()).append("\n\n");
+                });
+                sendMessage(chatId, message.toString());
+            });
         }
     }
 
@@ -78,6 +109,7 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
         String helpMessage = """
                 Available commands:
                 /start - Start the verification process
+                /check - Check the status of orders
                 /help - Show available commands
                 """;
         sendMessage(chatId, helpMessage);
@@ -85,6 +117,11 @@ public class MyTelegramBot implements LongPollingSingleThreadUpdateConsumer {
 
     private void startCommand(String chatId) {
         userSessions.put(chatId, new UserSession());
+        List<NotificationRecipient> recipients = notiRecipientRepository.findAllByTelegramId(chatId);
+        if (!recipients.isEmpty()) {
+            sendMessage(chatId, "Welcome back! Your Telegram ID has been registered.\nPlease use /help to see available commands.");
+            return;
+        }
         sendMessage(chatId, "Welcome! Please enter your ID: ");
     }
 

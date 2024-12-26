@@ -25,4 +25,6 @@ public interface BorrowOrderRepository extends JpaRepository<BorrowOrder, Long> 
         @Param("endDate") LocalDateTime endDate,
         Sort sort
     );
+
+    List<BorrowOrder> findAllByBorrowerId(Long borrowerId);
 }

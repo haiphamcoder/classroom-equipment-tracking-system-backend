@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -19,6 +20,11 @@ public class BorrowerController {
     @GetMapping("/get/{name}")
     public ResponseEntity<Optional<Borrower>> getBorrowerByName(@PathVariable String name) {
         return ResponseEntity.ok(borrowerService.findByName(name));
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<Borrower>> getAllBorrowers() {
+        return ResponseEntity.ok(borrowerService.findAll());
     }
 
     @PostMapping("/add")
