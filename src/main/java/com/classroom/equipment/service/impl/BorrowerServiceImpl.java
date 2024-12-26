@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,11 @@ public class BorrowerServiceImpl implements BorrowerService {
     @Override
     public Optional<Borrower> findByName(String name) {
         return borrowerRepository.findByName(name);
+    }
+
+    @Override
+    public List<Borrower> findAll() {
+        return borrowerRepository.findAll();
     }
 
     @Override
